@@ -291,6 +291,30 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNewspaperSlogan();
 
     // ---------------------------------
+    // 5b. Theme Color Picker
+    // ---------------------------------
+    window.setTheme = function(color) {
+        // Apply to CSS variable (affects all themed elements)
+        document.documentElement.style.setProperty('--primary-color', color);
+        // Update custom picker display
+        const picker = document.getElementById('custom-color-input');
+        if (picker) picker.value = color;
+        const label = document.getElementById('current-color-label');
+        if (label) { label.innerText = color; label.style.color = color; }
+        // Highlight selected swatch
+        document.querySelectorAll('#color-swatches div').forEach(sw => {
+            sw.style.border = (sw.style.background === color || sw.getAttribute('onclick')?.includes(color))
+                ? '2px solid #333' : '2px solid transparent';
+            sw.style.transform = 'scale(1)';
+        });
+        localStorage.setItem('kusti-theme-color', color);
+    };
+
+    // Restore saved theme or use default dark red
+    const savedColor = localStorage.getItem('kusti-theme-color') || '#8b0000';
+    window.setTheme(savedColor);
+
+    // ---------------------------------
     // 6. Gemini AI Assistant (New Feature)
     // ---------------------------------
     window.toggleAIModal = function() {
