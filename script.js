@@ -144,13 +144,13 @@ document.addEventListener('DOMContentLoaded', () => {
             headlineDisplay.style.display = 'none';
         }
 
-        // Logic for column counts and font ranges
+        // Logic for column counts and font ranges - TIGHTER TO FILL GAP
         let colCount = 2, minF = 22, maxF = 40;
-        if (effectiveWords <= 500) { colCount = 2; minF = 20; maxF = 40; }
-        else if (effectiveWords <= 1000) { colCount = 3; minF = 16; maxF = 32; }
-        else if (effectiveWords <= 1600) { colCount = 4; minF = 13; maxF = 26; }
-        else if (effectiveWords <= 2200) { colCount = 5; minF = 11; maxF = 22; }
-        else { colCount = 6; minF = 9; maxF = 18; }
+        if (effectiveWords <= 550) { colCount = 2; minF = 20; maxF = 40; }
+        else if (effectiveWords <= 1100) { colCount = 3; minF = 17; maxF = 32; }
+        else if (effectiveWords <= 1750) { colCount = 4; minF = 14; maxF = 28; }
+        else if (effectiveWords <= 2500) { colCount = 5; minF = 11; maxF = 24; }
+        else { colCount = 6; minF = 10; maxF = 18; }
 
         let htmlContent = '';
         if (articleImageSrc) {
@@ -176,7 +176,17 @@ document.addEventListener('DOMContentLoaded', () => {
         measurer.style.width = colWidth + 'px';
         measurer.style.lineHeight = '1.7';
         measurer.style.textAlign = 'justify';
-        measurer.innerHTML = htmlContent;
+        
+        // Match actual CSS for paragraphs to ensure accurate measurement
+        const pStyle = `margin-top: 0; margin-bottom: 0.8em; font-family: 'Mukta', sans-serif;`;
+        let measurerContent = '';
+        if (articleImageSrc) measurerContent += `<div style="height: 350px; margin-bottom: 25px;"></div>`;
+        paragraphs.forEach((p, idx) => {
+            // First paragraph has drop cap - roughly 4 lines taller
+            const dropCapExtra = idx === 0 ? 'padding-top: 15px;' : '';
+            measurerContent += `<p style="${pStyle}${dropCapExtra}">${parseFormatting(p)}</p>`;
+        });
+        measurer.innerHTML = measurerContent;
         document.body.appendChild(measurer);
 
         for (let i = 0; i < 18; i++) {
