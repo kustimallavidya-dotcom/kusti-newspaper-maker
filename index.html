@@ -51,7 +51,10 @@
 
             <div class="control-group">
                 <label for="manual-date">दिनांक आणि पंचांग (Date/Panchang):</label>
-                <input type="text" id="manual-date" placeholder="उदा. ज्येष्ठ कृष्ण नवमी | २१ मे २०२६" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
+                <input type="text" id="manual-date" placeholder="उदा. ज्येष्ठ कृष्ण नवमी | २१ मे २०२६" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta'; margin-bottom: 8px;">
+                
+                <label for="edition-input" style="font-size: 13px;">अंक / आवृत्ती (Edition):</label>
+                <input type="text" id="edition-input" placeholder="उदा. MARCH2026/01" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
             </div>
 
             <!-- Individual Color Controls -->
@@ -141,9 +144,10 @@
             <div id="newspaper-canvas" style="position: relative;">
                 
                 <!-- Date + Establishment: top-right corner -->
-                <div id="top-right-date" style="position: absolute; right: 20px; top: 12px; text-align: right; font-size: 13px; font-weight: bold; color: #555; max-width: 230px; line-height: 1.6;">
+                <div id="top-right-date" style="position: absolute; right: 20px; top: 12px; text-align: right; font-size: 13px; font-weight: bold; color: #555; max-width: 230px; line-height: 1.4;">
                     <span id="current-date-text">येथे दिनांक दिसेल</span>
-                    <div id="establishment-display" style="color: var(--primary-color); font-size: 12px; font-family:'Mukta'; border-top: 1px solid var(--primary-color); margin-top: 2px; padding-top: 2px;">स्थापना २००९</div>
+                    <div id="edition-display" style="font-size: 12px; font-family:'Mukta'; font-weight: bold; color: #222; margin-top: 1px;"></div>
+                    <div id="establishment-display" style="color: var(--primary-color); font-size: 11px; font-family:'Mukta'; border-top: 1px solid var(--primary-color); margin-top: 2px; padding-top: 2px;">स्थापना २००९</div>
                 </div>
 
                 <header class="newspaper-header" style="border-bottom: 4px solid var(--primary-color); padding-bottom: 8px; margin-bottom: 15px; padding-top: 10px;">

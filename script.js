@@ -130,9 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Effective space weight calculation (words + penalties for media/structure)
         let effectiveWords = words;
-        if (articleImageSrc) effectiveWords += 450; // Image space penalty
-        effectiveWords += paragraphs.length * 20; // Paragraph margin penalty
-        effectiveWords += 100; // Drop-cap penalty
+        if (articleImageSrc) effectiveWords += 500; // Image space penalty
+        effectiveWords += paragraphs.length * 25; // Paragraph margin penalty (increased to fill space)
+        effectiveWords += 150; // Drop-cap penalty
 
         const headlineInputEl = document.getElementById('headline-input');
         const headlineInput = headlineInputEl ? headlineInputEl.value.trim() : '';
@@ -146,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Logic for column counts and font ranges
         let colCount = 2, minF = 22, maxF = 40;
-        if (effectiveWords <= 400) { colCount = 2; minF = 20; maxF = 40; }
-        else if (effectiveWords <= 850) { colCount = 3; minF = 16; maxF = 30; }
-        else if (effectiveWords <= 1350) { colCount = 4; minF = 13; maxF = 24; }
-        else if (effectiveWords <= 1900) { colCount = 5; minF = 11; maxF = 20; }
-        else { colCount = 6; minF = 9; maxF = 16; }
+        if (effectiveWords <= 500) { colCount = 2; minF = 20; maxF = 40; }
+        else if (effectiveWords <= 1000) { colCount = 3; minF = 16; maxF = 32; }
+        else if (effectiveWords <= 1600) { colCount = 4; minF = 13; maxF = 26; }
+        else if (effectiveWords <= 2200) { colCount = 5; minF = 11; maxF = 22; }
+        else { colCount = 6; minF = 9; maxF = 18; }
 
         let htmlContent = '';
         if (articleImageSrc) {
@@ -267,6 +267,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     articleInput.addEventListener('input', updatePreview);
     document.getElementById('headline-input').addEventListener('input', updatePreview);
+    const editionInput = document.getElementById('edition-input');
+    const editionDisplay = document.getElementById('edition-display');
+
+    editionInput.addEventListener('input', () => {
+        editionDisplay.innerText = editionInput.value.trim();
+        localStorage.setItem('kusti-edition', editionInput.value.trim());
+    });
+
     authorNameInput.addEventListener('input', updateAuthorPreview);
     authorRoleInput.addEventListener('input', updateAuthorPreview);
     newspaperTitleInput.addEventListener('input', () => {
@@ -292,6 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
     authorRoleInput.value = localStorage.getItem('kusti-author-role') || '';
     manualDateInput.value = localStorage.getItem('kusti-date') || '';
     currentDateDisplay.innerText = manualDateInput.value || 'येथे दिनांक दिसेल';
+    editionInput.value = localStorage.getItem('kusti-edition') || '';
+    editionDisplay.innerText = editionInput.value;
 
     loadColors();
     updatePreview();
