@@ -133,8 +133,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         wordCountSpan.innerText = `शब्द: ${words}`;
         
+        // Effective space weight calculation (words + penalties for media/structure)
         let effectiveWords = words;
-        if (articleImageSrc) effectiveWords += 400;
+        if (articleImageSrc) effectiveWords += 450; // Image space penalty
+        effectiveWords += paragraphs.length * 20; // Paragraph margin penalty
+        effectiveWords += 100; // Drop-cap penalty
 
         const headlineInputEl = document.getElementById('headline-input');
         const headlineInput = headlineInputEl ? headlineInputEl.value.trim() : '';
@@ -146,12 +149,13 @@ document.addEventListener('DOMContentLoaded', () => {
             headlineDisplay.style.display = 'none';
         }
 
-        let colCount = 2, minF = 21, maxF = 32;
-        if (effectiveWords <= 350) { colCount = 2; minF = 20; maxF = 36; }
-        else if (effectiveWords <= 700) { colCount = 3; minF = 16; maxF = 28; }
-        else if (effectiveWords <= 1200) { colCount = 4; minF = 13; maxF = 22; }
-        else if (effectiveWords <= 1700) { colCount = 5; minF = 11; maxF = 18; }
-        else { colCount = 6; minF = 9; maxF = 15; }
+        // Logic for column counts and font ranges
+        let colCount = 2, minF = 22, maxF = 40;
+        if (effectiveWords <= 400) { colCount = 2; minF = 20; maxF = 40; }
+        else if (effectiveWords <= 850) { colCount = 3; minF = 16; maxF = 30; }
+        else if (effectiveWords <= 1350) { colCount = 4; minF = 13; maxF = 24; }
+        else if (effectiveWords <= 1900) { colCount = 5; minF = 11; maxF = 20; }
+        else { colCount = 6; minF = 9; maxF = 16; }
 
         let htmlContent = '';
         if (articleImageSrc) {
@@ -165,20 +169,26 @@ document.addEventListener('DOMContentLoaded', () => {
         articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
         articleContentContainer.innerHTML = htmlContent;
 
-        // Binary search for optimal font size
+        // More precise Binary search for optimal font size
         let bestF = minF;
         articleContentContainer.style.height = '100%';
-        for (let i = 0; i < 12; i++) {
+        
+        // Use 20 iterations for sub-pixel precision
+        for (let i = 0; i < 20; i++) {
             let mid = (minF + maxF) / 2;
             articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
-            if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 5) {
+            
+            // Check if content overflows horizontally (pushed into next hidden column)
+            if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 3) {
                 maxF = mid;
             } else {
                 bestF = mid;
                 minF = mid;
             }
         }
-        articleContentContainer.style.setProperty('--dynamic-font-size', bestF + "px");
+        
+        // Apply final font size with a tiny safety buffer (0.2px) to prevent edge cutoffs
+        articleContentContainer.style.setProperty('--dynamic-font-size', (bestF - 0.2) + "px");
         applyAllColors();
     };
 
