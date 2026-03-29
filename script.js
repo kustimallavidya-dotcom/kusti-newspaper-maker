@@ -53,6 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const articleColorPicker = document.getElementById('article-color-picker');
     const headerLinePicker = document.getElementById('header-line-color');
     const authorBgColorPicker = document.getElementById('author-bg-color');
+    const authorNameColorPicker = document.getElementById('author-name-color');
+    const authorRoleColorPicker = document.getElementById('author-role-color');
 
     const loadColors = () => {
         const colors = JSON.parse(localStorage.getItem('kusti-colors') || '{}');
@@ -63,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (colors.article) articleColorPicker.value = colors.article;
         if (colors.headerLine) headerLinePicker.value = colors.headerLine;
         if (colors.authorBg) authorBgColorPicker.value = colors.authorBg;
+        if (colors.authorName) authorNameColorPicker.value = colors.authorName;
+        if (colors.authorRole) authorRoleColorPicker.value = colors.authorRole;
         applyAllColors();
     };
 
@@ -74,7 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
             headline: headlineColorPicker.value,
             article: articleColorPicker.value,
             headerLine: headerLinePicker.value,
-            authorBg: authorBgColorPicker.value
+            authorBg: authorBgColorPicker.value,
+            authorName: authorNameColorPicker.value,
+            authorRole: authorRoleColorPicker.value
         };
         localStorage.setItem('kusti-colors', JSON.stringify(colors));
         applyAllColors();
@@ -90,11 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         headerElement.style.borderBottomColor = headerLinePicker.value;
         establishmentDisplay.style.borderTopColor = headerLinePicker.value;
         authorByline.style.backgroundColor = authorBgColorPicker.value;
+        authorNameDisplay.style.color = authorNameColorPicker.value;
+        authorRoleDisplay.style.color = authorRoleColorPicker.value;
         // Update general primary for author border
         document.documentElement.style.setProperty('--primary-color', headerLinePicker.value);
     };
 
-    [titleColorPicker, sloganColorPicker, dateColorPicker, headlineColorPicker, articleColorPicker, headerLinePicker, authorBgColorPicker].forEach(p => {
+    [titleColorPicker, sloganColorPicker, dateColorPicker, headlineColorPicker, articleColorPicker, headerLinePicker, authorBgColorPicker, authorNameColorPicker, authorRoleColorPicker].forEach(p => {
         p.addEventListener('input', saveColors);
     });
 
