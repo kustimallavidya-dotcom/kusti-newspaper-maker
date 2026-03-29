@@ -88,50 +88,44 @@ document.addEventListener('DOMContentLoaded', () => {
         const paragraphs = text.split('\n').filter(p => p.trim() !== '');
         
         // Word Count
-        const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
-        wordCountSpan.innerText = `शब्द: ${words}`;
-        
-        // Define scaling rules specifically for ensuring up to 3000 words logic fit on the single layout
-        let effectiveWords = words;
-        if (articleImageSrc) {
-            effectiveWords += 400; // An image roughly takes up 400-words equivalent of vertical space
+        // Headline handling
+        const headlineInput = document.getElementById('headline-input').value.trim();
+        const headlineDisplay = document.getElementById('article-headline-display');
+        if (headlineInput) {
+            headlineDisplay.innerText = headlineInput;
+            headlineDisplay.style.display = 'block';
+        } else {
+            headlineDisplay.style.display = 'none';
         }
 
+        // Define base aesthetic configurations based on word boundaries
         let colCount = 2;
-        let fontSize = "24px";
         let lineHeight = "1.8";
         let pMargin = "0.7em";
         let colGap = "45px";
+        let minF = 21;
+        let maxF = 32;
 
-        if (effectiveWords === 0) {
-            colCount = 2; fontSize = "24px";
-        } else if (effectiveWords <= 350) {
-            colCount = 2; fontSize = "21.5px"; lineHeight = "1.7"; pMargin = "0.7em"; colGap = "45px";
-        } else if (effectiveWords <= 700) {
-            colCount = 3; fontSize = "17px"; lineHeight = "1.55"; pMargin = "0.55em"; colGap = "40px";
-        } else if (effectiveWords <= 1100) {
-            colCount = 4; fontSize = "14.5px"; lineHeight = "1.45"; pMargin = "0.45em"; colGap = "35px";
-        } else if (effectiveWords <= 1500) {
-            colCount = 4; fontSize = "12.5px"; lineHeight = "1.35"; pMargin = "0.4em"; colGap = "30px";
-        } else if (effectiveWords <= 1900) {
-            colCount = 5; fontSize = "11px"; lineHeight = "1.3"; pMargin = "0.35em"; colGap = "25px";
-        } else if (effectiveWords <= 2400) {
-            colCount = 6; fontSize = "9.5px"; lineHeight = "1.25"; pMargin = "0.25em"; colGap = "20px";
+        if (words <= 350) {
+            colCount = 2; lineHeight = "1.75"; pMargin = "0.75em"; colGap = "45px";
+            minF = 18; maxF = 28;
+        } else if (words <= 700) {
+            colCount = 3; lineHeight = "1.6"; pMargin = "0.65em"; colGap = "40px";
+            minF = 15; maxF = 22;
+        } else if (words <= 1200) {
+            colCount = 4; lineHeight = "1.45"; pMargin = "0.55em"; colGap = "35px";
+            minF = 12; maxF = 17;
+        } else if (words <= 1700) {
+            colCount = 5; lineHeight = "1.35"; pMargin = "0.45em"; colGap = "30px";
+            minF = 10; maxF = 14;
         } else {
-            // max threshold fallback for massive texts
-            colCount = 6; fontSize = "9px"; lineHeight = "1.2"; pMargin = "0.2em"; colGap = "20px";
+            colCount = 6; lineHeight = "1.25"; pMargin = "0.3em"; colGap = "20px";
+            minF = 8; maxF = 12;
         }
 
-        // Apply dynamic styles to canvas content wrapper
-        articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
-        articleContentContainer.style.setProperty('--dynamic-font-size', fontSize);
-        articleContentContainer.style.setProperty('--dynamic-line-height', lineHeight);
-        articleContentContainer.style.setProperty('--dynamic-margin-bottom', pMargin);
-        articleContentContainer.style.setProperty('--dynamic-col-gap', colGap);
-
+        // Initially render HTML Content inside the container to test fit
         let htmlContent = '';
 
-        // Inject the user-defined image into the flow
         if (articleImageSrc) {
             htmlContent += `
                 <div class="article-image-wrapper">
@@ -140,18 +134,45 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
-        // Helper function for Bold Markdown parsing
         const parseBold = (str) => {
             return str.replace(/\*(.*?)\*/g, '<strong style="color:var(--primary-color)">$1</strong>');
         };
 
-        // Generate Paragraph HTML
         paragraphs.forEach(p => {
             htmlContent += `<p>${parseBold(p)}</p>`;
         });
 
-        // Push to Canvas
+        // Set layout variables
+        articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
+        articleContentContainer.style.setProperty('--dynamic-line-height', lineHeight);
+        articleContentContainer.style.setProperty('--dynamic-margin-bottom', pMargin);
+        articleContentContainer.style.setProperty('--dynamic-col-gap', colGap);
+        
         articleContentContainer.innerHTML = htmlContent;
+
+        // --- Aggressive Auto-Fill Binary Search ---
+        // Dynamically find the absolute perfect font size so text reaches bottom without overflowing.
+        let bestF = minF;
+        
+        // Temporarily ensure columns are constrained inside 100% height
+        articleContentContainer.style.height = '100%';
+
+        for (let i = 0; i < 15; i++) {
+            let mid = (minF + maxF) / 2;
+            articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
+            
+            // Check overflow. If scrollWidth > clientWidth, text pushed into hidden horizontal columns
+            // Meaning it overflowed vertically and got wrapped sideways.
+            if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 5) {
+                maxF = mid; // Too big
+            } else {
+                bestF = mid; // Fits, try making it even bigger
+                minF = mid;
+            }
+        }
+        
+        // Apply optimized font size but slightly lower to guarantee safe padding
+        articleContentContainer.style.setProperty('--dynamic-font-size', (bestF - 0.2) + "px");
     };
 
     const updateAuthorPreview = () => {
@@ -225,6 +246,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle Inputs
     articleInput.addEventListener('input', updatePreview);
+    
+    const headlineInputEl = document.getElementById('headline-input');
+    if (headlineInputEl) {
+        headlineInputEl.addEventListener('input', updatePreview);
+    }
+    
     authorNameInput.addEventListener('input', updateAuthorPreview);
     authorRoleInput.addEventListener('input', updateAuthorPreview);
 
