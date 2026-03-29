@@ -350,28 +350,56 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePreview();
     updateAuthorPreview();
 
+    // Setup temporary export style to prevent mobile scaling overlaps
+    const prepareExport = () => {
+        canvasElement.style.setProperty('transform', 'scale(1)', 'important');
+        canvasElement.style.setProperty('transform-origin', 'top left', 'important');
+        canvasElement.style.setProperty('margin', '0', 'important');
+    };
+    const restoreExport = () => {
+        canvasElement.style.removeProperty('transform');
+        canvasElement.style.removeProperty('transform-origin');
+        canvasElement.style.removeProperty('margin');
+    };
+
     // Export PNG
     downloadBtn.addEventListener('click', () => {
         downloadBtn.disabled = true;
-        html2canvas(canvasElement, { scale: 4, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `kusti-mallavidya-${Date.now()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            downloadBtn.disabled = false;
-        });
+        prepareExport();
+        setTimeout(() => {
+            html2canvas(canvasElement, { scale: 4, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `kusti-mallavidya-${Date.now()}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                restoreExport();
+                downloadBtn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                restoreExport();
+                downloadBtn.disabled = false;
+            });
+        }, 300); // Allow browser to reflow the 1:1 scale before snapshot
     });
 
     // Export PDF
     document.getElementById('download-pdf-btn').addEventListener('click', () => {
         const btn = document.getElementById('download-pdf-btn');
         btn.disabled = true;
-        html2canvas(canvasElement, { scale: 3, useCORS: true }).then(canvas => {
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 280] });
-            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 280);
-            pdf.save(`kusti-mallavidya-${Date.now()}.pdf`);
-            btn.disabled = false;
-        });
+        prepareExport();
+        setTimeout(() => {
+            html2canvas(canvasElement, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 280] });
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 280);
+                pdf.save(`kusti-mallavidya-${Date.now()}.pdf`);
+                restoreExport();
+                btn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                restoreExport();
+                btn.disabled = false;
+            });
+        }, 300);
     });
 });
