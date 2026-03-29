@@ -13,7 +13,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&family=Tiro+Devanagari+Marathi:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&family=Tiro+Devanagari+Marathi:ital@0;1&family=Yatra+One&display=swap" rel="stylesheet">
     
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
@@ -77,21 +77,23 @@
         <main class="preview-area">
             <!-- This container will be exported by html2canvas -->
             <div id="newspaper-canvas">
-                <header class="newspaper-header" style="border-bottom: 3px solid #111; padding-bottom: 10px; margin-bottom: 20px;">
-                    <div class="header-main" style="display: flex; align-items: center; justify-content: flex-start; gap: 30px;">
-                        <div class="logo-container" style="width: 130px; height: 130px; flex-shrink: 0; background: transparent;">
+                <header class="newspaper-header" style="border-bottom: 3px solid #111; padding-bottom: 5px; margin-bottom: 15px; position: relative;">
+                    <!-- Establishment Year at Absolute Top Right -->
+                    <div class="establishment" style="position: absolute; right: 0; top: 0; font-size: 16px; font-weight: bold; color: #555; background: #fff; padding: 2px 8px; border-radius: 4px; border: 1px solid #eee;">स्थापना २००९</div>
+                    
+                    <div class="header-main" style="display: flex; align-items: stretch; justify-content: flex-start; gap: 30px; margin-top: 15px;">
+                        <div class="logo-container" style="width: 140px; height: 140px; flex-shrink: 0; background: transparent; display: flex; align-items: center; justify-content: center;">
                             <img id="logo-preview" src="" alt="Logo" style="display:none; max-width: 100%; max-height: 100%;">
                             <span id="logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
                         </div>
-                        <div class="title-container" style="flex: 1; text-align: left;">
-                            <h1 class="newspaper-title" style="font-size: 85px; margin: 0; line-height: 1;">कुस्ती मल्लविद्या</h1>
-                            <div class="establishment" style="font-size: 18px; color: #444; margin-top: 5px;">स्थापना २००९</div>
-                            <h3 class="newspaper-slogan" style="font-size: 24px; margin: 10px 0 0 0; color:#222;">"गे मायभु तुझे मी फेडीन पांग सारे, आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
+                        <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center;">
+                            <h1 class="newspaper-title" style="font-family: 'Yatra One', cursive; font-size: 95px; margin: 0; line-height: 1; color: #8b0000; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.15);">कुस्ती मल्लविद्या</h1>
+                            <h3 class="newspaper-slogan" style="font-size: 24px; margin: 5px 0 0 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे, आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
                         </div>
                     </div>
                 </header>
 
-                <div class="date-container" style="text-align: right; border-bottom: 1px dotted #ccc; padding-bottom: 8px; margin-bottom: 20px;">
+                <div class="date-container" style="text-align: right; border-bottom: 1px dotted #ccc; padding-bottom: 6px; margin-bottom: 15px;">
                     <div id="current-date" style="font-size: 18px; font-weight: 600; font-family: 'Mukta'; color: #333;"></div>
                 </div>
 

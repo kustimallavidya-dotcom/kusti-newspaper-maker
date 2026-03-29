@@ -248,7 +248,7 @@ body {
 /* --------- Main Content (Columns) --------- */
 .columns {
     column-count: var(--dynamic-col-count, 2);
-    column-gap: 50px;
+    column-gap: var(--dynamic-col-gap, 50px);
     column-rule: 1px solid #ccc;
     height: 100%;
 }
@@ -271,7 +271,7 @@ body {
 /* Article Texts */
 #article-content p {
     margin-top: 0;
-    margin-bottom: 0.8em;
+    margin-bottom: var(--dynamic-margin-bottom, 0.8em);
     font-size: var(--dynamic-font-size, 21px);
     line-height: var(--dynamic-line-height, 1.7);
     color: #111;
