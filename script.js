@@ -24,50 +24,66 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ---------------------------------
+    // 1.5 Theme Selector Setup
+    // ---------------------------------
+    const themeSelector = document.getElementById('theme-selector');
+    const savedTheme = localStorage.getItem('kusti-theme') || '#8b0000';
+    themeSelector.value = savedTheme;
+    document.documentElement.style.setProperty('--primary-color', savedTheme);
+
+    themeSelector.addEventListener('change', (e) => {
+        const val = e.target.value;
+        document.documentElement.style.setProperty('--primary-color', val);
+        localStorage.setItem('kusti-theme', val);
+    });
+
+    // ---------------------------------
     // 2. Elements Configuration
     // ---------------------------------
-    const logoUpload = document.getElementById('logo-upload');
-    const logoPreview = document.getElementById('logo-preview');
-    const logoPlaceholder = document.getElementById('logo-placeholder');
-
-    const imageUpload = document.getElementById('article-image-upload');
     const articleInput = document.getElementById('article-input');
     const articleContentContainer = document.getElementById('article-content');
     const wordCountSpan = document.getElementById('word-count');
 
-    // Author Details Elements
+    // Branding
+    const logoUpload = document.getElementById('logo-upload');
+    const logoPreview = document.getElementById('logo-preview');
+    const logoPlaceholder = document.getElementById('logo-placeholder');
+
+    // Author
     const authorNameInput = document.getElementById('author-name');
     const authorRoleInput = document.getElementById('author-role');
     const authorImageUpload = document.getElementById('author-image-upload');
     
+    // Author Preview
     const authorByline = document.getElementById('author-byline');
-    const authorPhotoPreview = document.getElementById('author-photo-preview');
     const authorNameDisplay = document.getElementById('author-name-display');
     const authorRoleDisplay = document.getElementById('author-role-display');
+    const authorPhotoPreview = document.getElementById('author-photo-preview');
 
+    // Additional Media
+    const imageUpload = document.getElementById('article-image-upload');
     const downloadBtn = document.getElementById('download-btn');
     const canvasElement = document.getElementById('newspaper-canvas');
 
     let articleImageSrc = null;
     let authorImageSrc = localStorage.getItem('kusti-author-photo') || null;
 
-    // ---------------------------------
-    // 3. Load from LocalStorage
-    // ---------------------------------
-    if (localStorage.getItem('kusti-logo')) {
-        logoPreview.src = localStorage.getItem('kusti-logo');
+    // Load Cached Logo
+    const cachedLogo = localStorage.getItem('kusti-logo');
+    if (cachedLogo) {
+        logoPreview.src = cachedLogo;
         logoPreview.style.display = 'block';
         logoPlaceholder.style.display = 'none';
     }
 
+    // Load Cached Author
     authorNameInput.value = localStorage.getItem('kusti-author-name') || '';
     authorRoleInput.value = localStorage.getItem('kusti-author-role') || '';
 
     // ---------------------------------
-    // 4. Real-Time UI Updates
+    // 3. Document Updater Logic
     // ---------------------------------
     const updatePreview = () => {
-        // Update Article Text
         const text = articleInput.value.trim();
         const paragraphs = text.split('\n').filter(p => p.trim() !== '');
         
@@ -75,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         wordCountSpan.innerText = `शब्द: ${words}`;
         
-        // Define dynamic scaling rules specifically for ensuring up to 2200 words fit on the single layout
         let colCount = 2;
         let fontSize = "24px";
         let lineHeight = "1.8";
@@ -84,21 +99,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (words === 0) {
             colCount = 2; fontSize = "24px";
-        } else if (words <= 400) {
+        } else if (words <= 350) {
             colCount = 2; fontSize = "21.5px"; lineHeight = "1.7"; pMargin = "0.7em"; colGap = "45px";
         } else if (words <= 700) {
-            colCount = 3; fontSize = "18px"; lineHeight = "1.6"; pMargin = "0.6em"; colGap = "40px";
-        } else if (words <= 1000) {
-            colCount = 3; fontSize = "16.5px"; lineHeight = "1.5"; pMargin = "0.6em"; colGap = "40px";
-        } else if (words <= 1300) {
-            colCount = 4; fontSize = "15px"; lineHeight = "1.45"; pMargin = "0.5em"; colGap = "35px";
-        } else if (words <= 1650) {
-            colCount = 4; fontSize = "13.5px"; lineHeight = "1.4"; pMargin = "0.45em"; colGap = "35px";
-        } else if (words <= 2000) {
-            colCount = 5; fontSize = "12.5px"; lineHeight = "1.35"; pMargin = "0.4em"; colGap = "30px";
+            colCount = 3; fontSize = "17px"; lineHeight = "1.55"; pMargin = "0.55em"; colGap = "40px";
+        } else if (words <= 1100) {
+            colCount = 4; fontSize = "14.5px"; lineHeight = "1.45"; pMargin = "0.5em"; colGap = "35px";
+        } else if (words <= 1500) {
+            colCount = 4; fontSize = "13px"; lineHeight = "1.4"; pMargin = "0.45em"; colGap = "30px";
+        } else if (words <= 1800) {
+            colCount = 5; fontSize = "11.5px"; lineHeight = "1.35"; pMargin = "0.4em"; colGap = "25px";
+        } else if (words <= 2200) {
+            colCount = 6; fontSize = "10.5px"; lineHeight = "1.3"; pMargin = "0.3em"; colGap = "20px";
         } else {
             // max threshold fallback for massive texts
-            colCount = 5; fontSize = "11.5px"; lineHeight = "1.3"; pMargin = "0.3em"; colGap = "30px";
+            colCount = 6; fontSize = "9.5px"; lineHeight = "1.25"; pMargin = "0.25em"; colGap = "20px";
         }
 
         // Apply dynamic styles to canvas content wrapper
@@ -119,9 +134,14 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
+        // Helper function for Bold Markdown parsing
+        const parseBold = (str) => {
+            return str.replace(/\*(.*?)\*/g, '<strong style="color:var(--primary-color)">$1</strong>');
+        };
+
         // Generate Paragraph HTML
         paragraphs.forEach(p => {
-            htmlContent += `<p>${p}</p>`;
+            htmlContent += `<p>${parseBold(p)}</p>`;
         });
 
         // Push to Canvas

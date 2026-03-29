@@ -13,7 +13,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&family=Tiro+Devanagari+Marathi:ital@0;1&family=Yatra+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&family=Tiro+Devanagari+Marathi:ital@0;1&family=Rozha+One&display=swap" rel="stylesheet">
     
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
@@ -40,6 +40,16 @@
             <div class="control-group">
                 <label for="manual-date">दिनांक आणि पंचांग (Date/Panchang):</label>
                 <input type="text" id="manual-date" placeholder="उदा. ज्येष्ठ कृष्ण नवमी, वसंत ऋतू | २१ मे २०२६" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
+            </div>
+
+            <div class="control-group">
+                <label for="theme-selector">थीमचा रंग (Theme Color):</label>
+                <select id="theme-selector" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta'; font-weight:bold;">
+                    <option value="#8b0000" style="color:#8b0000;">लाल (Red)</option>
+                    <option value="#ff6a00" style="color:#ff6a00;">नारंगी (Orange)</option>
+                    <option value="#e1306c" style="color:#e1306c;">गुलाबी (Pink)</option>
+                    <option value="#111111" style="color:#111111;">काळा (Black)</option>
+                </select>
             </div>
 
             <div class="control-group" style="background: #f4f6f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
@@ -77,32 +87,30 @@
         <main class="preview-area">
             <!-- This container will be exported by html2canvas -->
             <div id="newspaper-canvas">
-                <header class="newspaper-header" style="border-bottom: 3px solid #111; padding-bottom: 5px; margin-bottom: 15px; position: relative;">
-                    <!-- Establishment Year at Absolute Top Right -->
-                    <div class="establishment" style="position: absolute; right: 0; top: 0; font-size: 16px; font-weight: bold; color: #555; background: #fff; padding: 2px 8px; border-radius: 4px; border: 1px solid #eee;">स्थापना २००९</div>
+                <header class="newspaper-header" style="border-bottom: 4px solid var(--primary-color); padding-bottom: 5px; margin-bottom: 12px; position: relative;">
+                    <!-- Combine Establishment Year and Date at Absolute Top Right -->
+                    <div class="top-bar-info" style="position: absolute; right: 0; top: -5px; font-size: 15px; font-weight: bold; color: #444; background: transparent; padding: 2px;">
+                        स्थापना २००९ | <span id="current-date"></span>
+                    </div>
                     
-                    <div class="header-main" style="display: flex; align-items: stretch; justify-content: flex-start; gap: 30px; margin-top: 15px;">
+                    <div class="header-main" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; margin-top: 15px;">
                         <div class="logo-container" style="width: 140px; height: 140px; flex-shrink: 0; background: transparent; display: flex; align-items: center; justify-content: center;">
                             <img id="logo-preview" src="" alt="Logo" style="display:none; max-width: 100%; max-height: 100%;">
                             <span id="logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
                         </div>
                         <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center;">
-                            <h1 class="newspaper-title" style="font-family: 'Yatra One', cursive; font-size: 95px; margin: 0; line-height: 1; color: #8b0000; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.15);">कुस्ती मल्लविद्या</h1>
-                            <h3 class="newspaper-slogan" style="font-size: 24px; margin: 5px 0 0 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे, आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
+                            <h1 class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 85px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
+                            <h3 class="newspaper-slogan" style="font-size: 20px; margin: 2px 0 0 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे, आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
                         </div>
                     </div>
                 </header>
 
-                <div class="date-container" style="text-align: right; border-bottom: 1px dotted #ccc; padding-bottom: 6px; margin-bottom: 15px;">
-                    <div id="current-date" style="font-size: 18px; font-weight: 600; font-family: 'Mukta'; color: #333;"></div>
-                </div>
-
                 <!-- Professional Author Byline -->
-                <div class="author-byline" id="author-byline" style="display:none; align-items: center; margin-bottom: 25px; padding: 10px 15px; background: #f9f9f9; border-left: 4px solid #8b0000;">
+                <div class="author-byline" id="author-byline" style="display:none; align-items: center; margin-bottom: 15px; padding: 8px 12px; background: #f9f9f9; border-left: 4px solid var(--primary-color);">
                     <img id="author-photo-preview" src="" alt="Author Photo" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
                     <div class="author-details">
-                        <h4 id="author-name-display" style="margin: 0; font-size: 20px; font-family: 'Tiro Devanagari Marathi'; color: #8b0000;"></h4>
-                        <p id="author-role-display" style="margin: 0; font-size: 15px; font-family: 'Mukta'; color: #444;"></p>
+                        <h4 id="author-name-display" style="margin: 0; font-size: 19px; font-family: 'Tiro Devanagari Marathi'; color: var(--primary-color);"></h4>
+                        <p id="author-role-display" style="margin: 0; font-size: 14px; font-family: 'Mukta'; color: #444;"></p>
                     </div>
                 </div>
                 
@@ -112,7 +120,7 @@
                     </div>
                 </section>
 
-                <footer class="newspaper-footer" style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #ccc; text-align: center; font-size: 16px; font-weight: bold; font-family: 'Mukta'; color: #333; background: #fff;">
+                <footer class="newspaper-footer" style="margin-top: 20px; padding-top: 15px; border-top: 3px solid var(--primary-color); text-align: center; font-size: 16px; font-weight: bold; font-family: 'Mukta'; color: #333; background: #fff;">
                     <div style="display: flex; justify-content: center; gap: 20px; align-items: center; flex-wrap: wrap;">
                         <!-- YouTube -->
                         <span style="display: flex; align-items: center; gap: 6px;">
