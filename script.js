@@ -332,52 +332,84 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    window.generateTitle = async function() {
-        const apiKey = document.getElementById('gemini-api-key').value.trim();
-        const prompt = document.getElementById('title-ai-prompt').value.trim();
-        const btn = document.getElementById('title-gen-btn');
+    window.generateTitleCalligraphy = function() {
+        const titleName = document.getElementById('title-name-input').value.trim();
+        const styleHint = document.getElementById('title-style-input').value.trim();
+        if (!titleName) return alert('वृत्तपत्राचे नाव लिहा!');
 
-        if (!apiKey) return alert('Gemini API Key भरा!');
-        if (!prompt) return alert('तुम्हाला कसले नाव हवे ते लिहा!');
+        document.getElementById('title-calligraphy-btn').style.display = 'none';
+        document.getElementById('title-calligraphy-loading').style.display = 'block';
+        document.getElementById('title-calligraphy-result').style.display = 'none';
 
-        localStorage.setItem('gemini-api-key', apiKey);
-        btn.innerText = '⏳ तयार होत आहे...';
-        btn.disabled = true;
-        document.getElementById('title-result').style.display = 'none';
+        // Build Pollinations.ai prompt for stunning calligraphy title
+        const fullPrompt = `"${titleName}" written in ${styleHint}, ultra high quality, 4K resolution, horizontal banner format, photorealistic`;
+        const encoded = encodeURIComponent(fullPrompt);
+        const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=200&nologo=true&seed=${Date.now()}`;
 
-        try {
-            const instruction = `Output ONLY a single short attractive Marathi newspaper name (maximum 4 words). Just the name itself, nothing else. No punctuation, no quotes, no explanation.`;
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: `${instruction}\n\nUser request: ${prompt}` }] }] })
+        const img = document.getElementById('title-calligraphy-preview');
+        img.onload = function() {
+            document.getElementById('title-calligraphy-loading').style.display = 'none';
+            document.getElementById('title-calligraphy-result').style.display = 'block';
+            document.getElementById('title-calligraphy-btn').style.display = 'block';
+        };
+        img.onerror = function() {
+            document.getElementById('title-calligraphy-loading').style.display = 'none';
+            document.getElementById('title-calligraphy-btn').style.display = 'block';
+            alert('Image बनवता आली नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.');
+        };
+        img.src = imageUrl;
+    };
+
+    window.applyTitleImage = function() {
+        const previewImg = document.getElementById('title-calligraphy-preview');
+        if (!previewImg.src) return;
+
+        // Fetch as base64 for html2canvas compatibility
+        fetch(previewImg.src)
+            .then(res => res.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const titleImageDisplay = document.getElementById('title-image-display');
+                    const titleTextDisplay = document.getElementById('newspaper-title-display');
+                    // Show image, hide text
+                    titleImageDisplay.src = e.target.result;
+                    titleImageDisplay.style.display = 'block';
+                    titleTextDisplay.style.display = 'none';
+                    window.toggleAIModal();
+                };
+                reader.readAsDataURL(blob);
+            })
+            .catch(() => {
+                // Direct URL fallback
+                const titleImageDisplay = document.getElementById('title-image-display');
+                const titleTextDisplay = document.getElementById('newspaper-title-display');
+                titleImageDisplay.src = previewImg.src;
+                titleImageDisplay.style.display = 'block';
+                titleTextDisplay.style.display = 'none';
+                window.toggleAIModal();
             });
-
-            const data = await response.json();
-            if (data.error) {
-                alert('Error: ' + data.error.message);
-            } else {
-                const result = data.candidates[0].content.parts[0].text.trim();
-                document.getElementById('title-result-text').innerText = result;
-                document.getElementById('title-result').style.display = 'block';
-            }
-        } catch (err) {
-            alert('Network Error: ' + err.message);
-        } finally {
-            btn.innerText = '✨ नाव सुचवा';
-            btn.disabled = false;
-        }
     };
 
-    window.applyTitle = function() {
-        const newTitle = document.getElementById('title-result-text').innerText.trim();
-        if (newTitle) {
-            const titleInput = document.getElementById('newspaper-title-input');
-            titleInput.value = newTitle;
-            updateNewspaperTitle();
-            window.toggleAIModal();
-        }
+    // Apply just the text title (no image)
+    window.applyTitleText = function() {
+        const titleName = document.getElementById('title-name-input').value.trim();
+        if (!titleName) return alert('नाव लिहा!');
+        
+        const titleInput = document.getElementById('newspaper-title-input');
+        const titleTextDisplay = document.getElementById('newspaper-title-display');
+        const titleImageDisplay = document.getElementById('title-image-display');
+        
+        titleInput.value = titleName;
+        titleTextDisplay.innerText = titleName;
+        titleTextDisplay.style.display = 'block';
+        titleImageDisplay.style.display = 'none'; // Hide calligraphy image
+        window.toggleAIModal();
     };
+
+    // Legacy aliases
+    window.generateTitle = window.generateTitleCalligraphy;
+    window.applyTitle = window.applyTitleText;
 
     window.generateAIImage = function() {
         const prompt = document.getElementById('image-ai-prompt').value.trim();

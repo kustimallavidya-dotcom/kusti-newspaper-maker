@@ -118,7 +118,10 @@
                             <span id="logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
                         </div>
                         <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center;">
+                            <!-- Text Title (default) -->
                             <h1 id="newspaper-title-display" class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 85px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
+                            <!-- AI Calligraphy Image Title (hidden by default) -->
+                            <img id="title-image-display" src="" alt="Title" style="display:none; max-height: 110px; width: auto; max-width: 100%; object-fit: contain;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px;">
                                 <h3 id="newspaper-slogan-display" class="newspaper-slogan" style="font-size: 20px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
                                 <div class="establishment" style="font-size: 16px; font-weight: bold; color: #444; font-family: 'Mukta'; margin-left: 10px;">स्थापना २००९</div>
@@ -192,21 +195,28 @@
 
         <!-- Tool 1: Title AI -->
         <div id="tool-title" style="padding:22px;">
-            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">वृत्तपत्राचे नाव अधिक आकर्षक कसे हवे आहे ते सांगा. AI एक सुंदर नाव सुचवेल.</p>
-            <label style="font-size:13px; font-weight:bold; color:#333;">तुम्हाला कसले नाव हवे आहे?</label>
-            <textarea id="title-ai-prompt" rows="3" placeholder="उदा. कुस्ती आणि मल्लविद्येशी संबंधित, राजेशाही आणि ताकदीचा भाव असलेले नाव सुचवा..." style="width:100%; margin-top:6px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:14px; resize:none; box-sizing:border-box;"></textarea>
+            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">वृत्तपत्राचे नाव लिहा. AI त्याची <strong>सुंदर कॅलिग्राफी Image</strong> तयार करेल जी थेट paper मध्ये जाईल!</p>
+            
+            <label style="font-size:13px; font-weight:bold; color:#333;">वृत्तपत्राचे नाव (Marathi मध्ये):</label>
+            <input type="text" id="title-name-input" value="कुस्ती मल्लविद्या" style="width:100%; margin-top:6px; padding:10px; border:2px solid var(--primary-color); border-radius:6px; font-family:'Rozha One'; font-size:22px; box-sizing:border-box; color:var(--primary-color);">
 
-            <label style="font-size:12px; font-weight:bold; color:#777; margin-top:12px; display:block;">Gemini API Key:</label>
-            <div style="display:flex; gap:8px; margin-top:4px;">
-                <input type="password" id="gemini-api-key" placeholder="Paste API Key..." style="flex:1; padding:8px; border:1px solid #ddd; border-radius:6px; font-family:monospace; font-size:13px;">
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="align-self:center; font-size:11px; color:#0066cc; text-decoration:none; white-space:nowrap;">मोफत मिळवा</a>
+            <label style="font-size:13px; font-weight:bold; color:#333; margin-top:12px; display:block;">कॅलिग्राफी style (English मध्ये describe करा):</label>
+            <input type="text" id="title-style-input" value="ornate Indian calligraphy, wrestling motifs like wrestlers and mace, dark red and gold, white background, newspaper masthead, Devanagari script" style="width:100%; margin-top:6px; padding:8px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:13px; box-sizing:border-box;">
+
+            <div style="display:flex; gap:10px; margin-top:16px;">
+                <button onclick="window.generateTitleCalligraphy()" id="title-calligraphy-btn" style="flex:2; padding:13px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; font-family:'Mukta';">🎨 Calligraphy Image बनवा</button>
+                <button onclick="window.applyTitleText()" style="flex:1; padding:13px; background:#555; color:white; border:none; border-radius:8px; font-size:13px; font-weight:bold; cursor:pointer; font-family:'Mukta';">Aa Text</button>
             </div>
 
-            <button onclick="window.generateTitle()" id="title-gen-btn" style="width:100%; margin-top:16px; padding:13px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; font-family:'Mukta';">✨ नाव सुचवा</button>
-            <div id="title-result" style="display:none; margin-top:14px; padding:14px; background:#fff8e1; border-radius:8px; border-left:4px solid var(--primary-color);">
-                <p style="margin:0 0 6px 0; font-size:12px; color:#666;">AI चे सुचवलेले नाव:</p>
-                <p id="title-result-text" style="margin:0; font-size:20px; font-weight:bold; color:var(--primary-color); font-family:'Rozha One';"></p>
-                <button onclick="window.applyTitle()" style="margin-top:10px; padding:8px 18px; background:#28a745; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Mukta'; font-size:14px; font-weight:bold;">✅ हे नाव वापरा</button>
+            <div id="title-calligraphy-loading" style="display:none; text-align:center; padding:18px; color:#666;">
+                ⏳ कॅलिग्राफी Image तयार होत आहे...
+            </div>
+
+            <div id="title-calligraphy-result" style="display:none; margin-top:14px;">
+                <p style="margin:0 0 6px 0; font-size:12px; color:#666; font-weight:bold;">तयार झालेली Image:</p>
+                <img id="title-calligraphy-preview" src="" alt="Title Calligraphy" style="width:100%; border-radius:8px; border:2px solid #ddd; background:#f5f5f5;">
+                <button onclick="window.applyTitleImage()" style="width:100%; margin-top:10px; padding:12px; background:#28a745; color:white; border:none; border-radius:8px; cursor:pointer; font-family:'Mukta'; font-size:15px; font-weight:bold;">📰 हे Paper मध्ये घाला</button>
+                <button onclick="document.getElementById('title-calligraphy-result').style.display='none'; document.getElementById('title-calligraphy-btn').style.display='block';" style="width:100%; margin-top:6px; padding:8px; background:#eee; color:#333; border:none; border-radius:6px; cursor:pointer; font-family:'Mukta'; font-size:13px;">↩️ पुन्हा बनवा</button>
             </div>
         </div>
 
