@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>कुस्ती मल्लविद्या - Newspaper Maker</title>
+    
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8b0000">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;600;700&family=Tiro+Devanagari+Marathi:ital@0;1&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- html2canvas Library (Used for HD Export) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Dashboard / Controls Area -->
+        <aside class="dashboard" id="no-print">
+            <div class="dashboard-header">
+                <h2>नियंत्रण पॅनेल</h2>
+                <p>Newspaper Canvas Editor</p>
+            </div>
+            
+            <div class="control-group">
+                <label for="logo-upload">लोगो (Logo) अपलोड करा:</label>
+                <input type="file" id="logo-upload" accept="image/*">
+            </div>
+
+            <div class="control-group">
+                <label for="article-image-upload">मुलाखत/लेख फोटो (Article Image):</label>
+                <input type="file" id="article-image-upload" accept="image/*">
+            </div>
+
+            <div class="control-group">
+                <label for="article-input">लेख (Article/Interview Content):</label>
+                <textarea id="article-input" rows="18" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
+            </div>
+
+            <button id="download-btn" class="primary-btn">Download as HD Image (PNG)</button>
+        </aside>
+
+        <!-- Dynamic Preview Area (The Canvas) -->
+        <main class="preview-area">
+            <!-- This container will be exported by html2canvas -->
+            <div id="newspaper-canvas">
+                <header class="newspaper-header">
+                    <div class="header-main">
+                        <div class="logo-container">
+                            <img id="logo-preview" src="" alt="Logo" style="display:none;">
+                            <span id="logo-placeholder">Logo<br>Space</span>
+                        </div>
+                        <div class="title-container">
+                            <h1 class="newspaper-title">कुस्ती मल्लविद्या</h1>
+                            <h3 class="newspaper-slogan">"गे मायभु तुझे मी फेडीन पांग सारे,<br>आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
+                        </div>
+                    </div>
+                    <div class="date-container">
+                        <div class="heavy-line"></div>
+                        <div id="current-date">दिनांक</div>
+                        <div class="light-line"></div>
+                    </div>
+                </header>
+                
+                <section class="newspaper-content">
+                    <div id="article-content" class="columns">
+                        <!-- Output generated in JS -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Script -->
+    <script src="script.js"></script>
+</body>
+</html>
