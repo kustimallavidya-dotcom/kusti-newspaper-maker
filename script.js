@@ -88,8 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const paragraphs = text.split('\n').filter(p => p.trim() !== '');
         
         // Word Count
+        const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
+        wordCountSpan.innerText = `शब्द: ${words}`;
+        
+        let effectiveWords = words;
+        if (articleImageSrc) {
+            effectiveWords += 400; // An image roughly takes up 400-words equivalent of vertical space
+        }
+
         // Headline handling
-        const headlineInput = document.getElementById('headline-input').value.trim();
+        const headlineInputEl = document.getElementById('headline-input');
+        const headlineInput = headlineInputEl ? headlineInputEl.value.trim() : '';
+
         const headlineDisplay = document.getElementById('article-headline-display');
         if (headlineInput) {
             headlineDisplay.innerText = headlineInput;
@@ -106,16 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
         let minF = 21;
         let maxF = 32;
 
-        if (words <= 350) {
+        if (effectiveWords <= 350) {
             colCount = 2; lineHeight = "1.75"; pMargin = "0.75em"; colGap = "45px";
             minF = 18; maxF = 28;
-        } else if (words <= 700) {
+        } else if (effectiveWords <= 700) {
             colCount = 3; lineHeight = "1.6"; pMargin = "0.65em"; colGap = "40px";
             minF = 15; maxF = 22;
-        } else if (words <= 1200) {
+        } else if (effectiveWords <= 1200) {
             colCount = 4; lineHeight = "1.45"; pMargin = "0.55em"; colGap = "35px";
             minF = 12; maxF = 17;
-        } else if (words <= 1700) {
+        } else if (effectiveWords <= 1700) {
             colCount = 5; lineHeight = "1.35"; pMargin = "0.45em"; colGap = "30px";
             minF = 10; maxF = 14;
         } else {
