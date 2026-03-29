@@ -1,7 +1,8 @@
 :root {
     --primary-color: #8b0000;
     --bg-color: #e0e5ec;
-    --canvas-width: 1080px; /* Fixed HD Canvas width */
+    --canvas-width: 1080px;
+    --canvas-height: 1440px; /* 3:4 Strictly ratio Height */
 }
 
 body {
@@ -11,7 +12,7 @@ body {
     background-color: var(--bg-color);
     display: flex;
     height: 100vh;
-    overflow: hidden; /* App takes full screen, internal areas scroll */
+    overflow: hidden;
 }
 
 .app-container {
@@ -23,7 +24,7 @@ body {
    Dashboard (Controls)
 ----------------------------- */
 .dashboard {
-    width: 350px;
+    width: 380px; /* slightly wider to fit new inputs */
     background: #fff;
     padding: 30px 25px;
     box-shadow: 2px 0 15px rgba(0,0,0,0.1);
@@ -58,9 +59,11 @@ body {
     font-size: 15px;
 }
 
+.control-group input[type="text"],
 .control-group input[type="file"] {
     width: 100%;
     padding: 8px 0;
+    box-sizing: border-box;
 }
 
 .control-group textarea {
@@ -123,19 +126,21 @@ body {
 ----------------------------- */
 #newspaper-canvas {
     width: var(--canvas-width);
-    min-height: 1080px; /* Base height, expands with content */
+    height: var(--canvas-height); /* Strictly fixed Height 1440px */
     background: #fff;
     padding: 60px 70px; /* Proper newspaper margins */
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     box-sizing: border-box;
     position: relative;
-    /* Optional paper texture look */
-    background-color: #ffffff;
+    overflow: hidden; /* Avoid overflow text breaking layout entirely */
+    display: flex;
+    flex-direction: column;
 }
 
 /* --------- Header --------- */
 .newspaper-header {
     margin-bottom: 35px;
+    flex-shrink: 0;
 }
 
 .header-main {
@@ -221,11 +226,17 @@ body {
     color: #333;
 }
 
+.newspaper-content {
+    flex: 1;
+    overflow: hidden; /* prevents overlap or pushing height beyond 1440px */
+}
+
 /* --------- Main Content (Columns) --------- */
 .columns {
     column-count: 2; /* 2 Column layout */
     column-gap: 60px; /* Proper gap between columns */
     column-rule: 1px solid #ccc; /* Divider line */
+    height: 100%; /* fill the container */
 }
 
 /* Embedded uploaded image inside the layout */
@@ -298,4 +309,36 @@ body {
         transform: scale(0.32);
         margin-bottom: -68%; /* Keeps layout in place */
     }
+}
+
+/* Author Byline CSS */
+.author-byline {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.author-byline img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary-color);
+    margin-right: 15px;
+}
+
+.author-details h4 {
+    margin: 0;
+    font-size: 22px;
+    font-family: 'Tiro Devanagari Marathi', serif;
+    color: #111;
+}
+
+.author-details p {
+    margin: 0;
+    font-size: 16px;
+    font-family: 'Mukta', sans-serif;
+    color: #555;
+    font-weight: 600;
 }

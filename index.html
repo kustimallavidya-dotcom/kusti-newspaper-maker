@@ -27,25 +27,41 @@
         <aside class="dashboard" id="no-print">
             <div class="dashboard-header">
                 <h2>नियंत्रण पॅनेल</h2>
-                <p>Newspaper Canvas Editor</p>
+                <p>Newspaper Canvas Editor (3:4 Size)</p>
             </div>
             
             <div class="control-group">
                 <label for="logo-upload">लोगो (Logo) अपलोड करा:</label>
                 <input type="file" id="logo-upload" accept="image/*">
+                <small style="color:#666; font-size:12px;">* लोगो एकदाच अपलोड करा, तो सेव्ह राहील.</small>
+            </div>
+
+            <div class="control-group" style="background: #f4f6f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                <label style="color: var(--primary-color);">लेखकाची माहिती (Author Details)</label>
+                
+                <label for="author-image-upload" style="font-size: 13px; margin-top: 5px;">फोटो (Photo):</label>
+                <input type="file" id="author-image-upload" accept="image/*" style="margin-bottom: 10px;">
+                
+                <input type="text" id="author-name" placeholder="लेखकाचे नाव (उदा. प्रा. मिलिंद)" style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
+                
+                <input type="text" id="author-role" placeholder="पद (उदा. कुस्ती अभ्यासक)" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
+                <small style="color:#666; font-size:12px; display:block; margin-top:5px;">* ही माहिती सेव्ह राहील.</small>
             </div>
 
             <div class="control-group">
-                <label for="article-image-upload">मुलाखत/लेख फोटो (Article Image):</label>
+                <label for="article-image-upload">मुलाखत/बातमी फोटो (Article Image):</label>
                 <input type="file" id="article-image-upload" accept="image/*">
             </div>
 
             <div class="control-group">
-                <label for="article-input">लेख (Article/Interview Content):</label>
-                <textarea id="article-input" rows="18" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
+                <label for="article-input">लेख (Content):
+                    <span id="word-count" style="font-weight:normal; font-size:13px; color:#555; float:right;">शब्द: 0</span>
+                </label>
+                <textarea id="article-input" rows="12" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
+                <div style="font-size: 12px; color: #8b0000; margin-top: 5px; font-weight: bold;">* ३:४ या आकारात उत्तम दिसण्यासाठी लेख २५० ते ३०० शब्दांचा असावा.</div>
             </div>
 
-            <button id="download-btn" class="primary-btn">Download as HD Image (PNG)</button>
+            <button id="download-btn" class="primary-btn">Download as HD Image</button>
         </aside>
 
         <!-- Dynamic Preview Area (The Canvas) -->
@@ -67,6 +83,15 @@
                         <div class="heavy-line"></div>
                         <div id="current-date">दिनांक</div>
                         <div class="light-line"></div>
+                    </div>
+
+                    <!-- Author Byline -->
+                    <div class="author-byline" id="author-byline" style="display:none;">
+                        <img id="author-photo-preview" src="" alt="Author Photo">
+                        <div class="author-details">
+                            <h4 id="author-name-display"></h4>
+                            <p id="author-role-display"></p>
+                        </div>
                     </div>
                 </header>
                 

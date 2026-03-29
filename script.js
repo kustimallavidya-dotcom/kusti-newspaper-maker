@@ -25,18 +25,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageUpload = document.getElementById('article-image-upload');
     const articleInput = document.getElementById('article-input');
     const articleContentContainer = document.getElementById('article-content');
+    const wordCountSpan = document.getElementById('word-count');
+
+    // Author Details Elements
+    const authorNameInput = document.getElementById('author-name');
+    const authorRoleInput = document.getElementById('author-role');
+    const authorImageUpload = document.getElementById('author-image-upload');
+    
+    const authorByline = document.getElementById('author-byline');
+    const authorPhotoPreview = document.getElementById('author-photo-preview');
+    const authorNameDisplay = document.getElementById('author-name-display');
+    const authorRoleDisplay = document.getElementById('author-role-display');
 
     const downloadBtn = document.getElementById('download-btn');
     const canvasElement = document.getElementById('newspaper-canvas');
 
     let articleImageSrc = null;
+    let authorImageSrc = localStorage.getItem('kusti-author-photo') || null;
 
     // ---------------------------------
-    // 3. Real-Time UI Updates
+    // 3. Load from LocalStorage
+    // ---------------------------------
+    if (localStorage.getItem('kusti-logo')) {
+        logoPreview.src = localStorage.getItem('kusti-logo');
+        logoPreview.style.display = 'block';
+        logoPlaceholder.style.display = 'none';
+    }
+
+    authorNameInput.value = localStorage.getItem('kusti-author-name') || '';
+    authorRoleInput.value = localStorage.getItem('kusti-author-role') || '';
+
+    // ---------------------------------
+    // 4. Real-Time UI Updates
     // ---------------------------------
     const updatePreview = () => {
+        // Update Article Text
         const text = articleInput.value.trim();
         const paragraphs = text.split('\n').filter(p => p.trim() !== '');
+        
+        // Word Count
+        const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
+        wordCountSpan.innerText = `शब्द: ${words}`;
+        if (words > 320) wordCountSpan.style.color = '#8b0000'; // Warn if too long
+        else wordCountSpan.style.color = '#555';
 
         let htmlContent = '';
 
@@ -58,18 +89,55 @@ document.addEventListener('DOMContentLoaded', () => {
         articleContentContainer.innerHTML = htmlContent;
     };
 
+    const updateAuthorPreview = () => {
+        const name = authorNameInput.value.trim();
+        const role = authorRoleInput.value.trim();
+        
+        // Save to cache
+        localStorage.setItem('kusti-author-name', name);
+        localStorage.setItem('kusti-author-role', role);
+
+        if (name || role || authorImageSrc) {
+            authorByline.style.display = 'flex';
+            if (authorImageSrc) {
+                authorPhotoPreview.src = authorImageSrc;
+                authorPhotoPreview.style.display = 'block';
+            } else {
+                authorPhotoPreview.style.display = 'none';
+            }
+            authorNameDisplay.innerText = name ? 'लेखक: ' + name : '';
+            authorRoleDisplay.innerText = role;
+        } else {
+            authorByline.style.display = 'none';
+        }
+    };
+
     // ---------------------------------
-    // 4. File Upload Handlers
+    // 5. File Upload Handlers
     // ---------------------------------
     logoUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-            // Convert to base64 for CORS bypass with html2canvas later
             const reader = new FileReader();
             reader.onload = function(event) {
-                logoPreview.src = event.target.result;
+                const b64 = event.target.result;
+                logoPreview.src = b64;
                 logoPreview.style.display = 'block';
                 logoPlaceholder.style.display = 'none';
+                localStorage.setItem('kusti-logo', b64); // Save logo
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    authorImageUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                authorImageSrc = event.target.result;
+                localStorage.setItem('kusti-author-photo', authorImageSrc);
+                updateAuthorPreview();
             };
             reader.readAsDataURL(file);
         }
@@ -90,15 +158,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle Rich Text Area Inputs
+    // Handle Inputs
     articleInput.addEventListener('input', updatePreview);
+    authorNameInput.addEventListener('input', updateAuthorPreview);
+    authorRoleInput.addEventListener('input', updateAuthorPreview);
 
     // Initial default placeholder state
     articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. डावीकडे जाऊन लेख किंवा बातमीचे स्वरूप पाहू शकता. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही मोठे लेख येथे टाकू शकता आणि ते दोन रकान्यांत (columns) अत्यंत आकर्षकरीत्या विभागले जातील.";
+    
+    // Initial Render
     updatePreview();
+    updateAuthorPreview();
 
     // ---------------------------------
-    // 5. HD Canvas Download Export
+    // 6. HD Canvas Download Export
     // ---------------------------------
     downloadBtn.addEventListener('click', () => {
         const originalText = downloadBtn.innerText;
