@@ -66,8 +66,42 @@ document.addEventListener('DOMContentLoaded', () => {
         // Word Count
         const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         wordCountSpan.innerText = `शब्द: ${words}`;
-        if (words > 320) wordCountSpan.style.color = '#8b0000'; // Warn if too long
-        else wordCountSpan.style.color = '#555';
+        
+        // Define scaling rules
+        let colCount = 2;
+        let fontSize = "24px";
+        let lineHeight = "1.8";
+
+        if (words === 0) {
+            colCount = 2;
+            fontSize = "24px";
+        } else if (words <= 350) {
+            colCount = 2;
+            fontSize = "22px";
+            lineHeight = "1.7";
+        } else if (words <= 600) {
+            colCount = 3;
+            fontSize = "19px";
+            lineHeight = "1.65";
+        } else if (words <= 1000) {
+            colCount = 3;
+            fontSize = "16px";
+            lineHeight = "1.5";
+        } else if (words <= 1400) {
+            colCount = 4;
+            fontSize = "15px";
+            lineHeight = "1.45";
+        } else {
+            // max threshold fallback
+            colCount = 4;
+            fontSize = "13px";
+            lineHeight = "1.4";
+        }
+
+        // Apply dynamic styles to canvas content wrapper
+        articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
+        articleContentContainer.style.setProperty('--dynamic-font-size', fontSize);
+        articleContentContainer.style.setProperty('--dynamic-line-height', lineHeight);
 
         let htmlContent = '';
 
@@ -164,49 +198,79 @@ document.addEventListener('DOMContentLoaded', () => {
     authorRoleInput.addEventListener('input', updateAuthorPreview);
 
     // Initial default placeholder state
-    articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. डावीकडे जाऊन लेख किंवा बातमीचे स्वरूप पाहू शकता. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही मोठे लेख येथे टाकू शकता आणि ते दोन रकान्यांत (columns) अत्यंत आकर्षकरीत्या विभागले जातील.";
+    articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. डावीकडे जाऊन लेख किंवा बातमीचे स्वरूप पाहू शकता. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही १५०० शब्दांपर्यंत इथे मोठे लेख टाकू शकता. शब्द वाढले की कॉलमची संख्या आणि अक्षरांचा आकार आपोआप योग्य रितीने ऍडजस्ट होतो!";
     
     // Initial Render
     updatePreview();
     updateAuthorPreview();
 
     // ---------------------------------
-    // 6. HD Canvas Download Export
+    // 6. HD Canvas Download Export (PNG)
     // ---------------------------------
     downloadBtn.addEventListener('click', () => {
         const originalText = downloadBtn.innerText;
-        downloadBtn.innerText = "Exporting HD Image...";
+        downloadBtn.innerText = "Exporting PNG...";
         downloadBtn.disabled = true;
 
-        // Html2canvas High resolution setup
-        // It relies completely on standard DOM sizing.
-        // Bypassing CSS scaling that might occur on mobile viewports.
-
         html2canvas(canvasElement, {
-            scale: 4, // 4x Export resolution ensures absolutely zero pixelation on WhatsApp Zoom
+            scale: 4, 
             useCORS: true, 
             backgroundColor: '#ffffff',
             logging: false,
-            // To guarantee capturing the full flowing heights
             windowWidth: canvasElement.scrollWidth,
             windowHeight: canvasElement.scrollHeight
         }).then(canvas => {
             const imgData = canvas.toDataURL('image/png', 1.0);
-            
-            // Initiate File Download
             const link = document.createElement('a');
             link.download = `kusti-mallavidya-${Date.now()}.png`;
             link.href = imgData;
             link.click();
-            
-            // Re-enable Dashboard
             downloadBtn.innerText = originalText;
             downloadBtn.disabled = false;
         }).catch(err => {
-            console.error('HD Export Error:', err);
-            alert('चित्र तयार करताना काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.');
+            console.error(err);
+            alert('चित्र तयार करताना काहीतरी चूक झाली.');
             downloadBtn.innerText = originalText;
             downloadBtn.disabled = false;
+        });
+    });
+
+    // ---------------------------------
+    // 7. PDF Download Export
+    // ---------------------------------
+    const downloadPdfBtn = document.getElementById('download-pdf-btn');
+    downloadPdfBtn.addEventListener('click', () => {
+        const originalText = downloadPdfBtn.innerText;
+        downloadPdfBtn.innerText = "Exporting PDF...";
+        downloadPdfBtn.disabled = true;
+
+        html2canvas(canvasElement, {
+            scale: 3, // slightly lower to keep reasonable PDF size
+            useCORS: true, 
+            backgroundColor: '#ffffff',
+            logging: false,
+            windowWidth: canvasElement.scrollWidth,
+            windowHeight: canvasElement.scrollHeight
+        }).then(canvas => {
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            // jsPDF logic for 3:4 orientation. e.g. 210mm x 280mm
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: [210, 280]
+            });
+            
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 280);
+            pdf.save(`kusti-mallavidya-${Date.now()}.pdf`);
+            
+            downloadPdfBtn.innerText = originalText;
+            downloadPdfBtn.disabled = false;
+        }).catch(err => {
+            console.error('PDF Export Error:', err);
+            alert('PDF तयार करताना काहीतरी चूक झाली.');
+            downloadPdfBtn.innerText = originalText;
+            downloadPdfBtn.disabled = false;
         });
     });
 });

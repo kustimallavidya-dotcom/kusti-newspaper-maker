@@ -153,7 +153,6 @@ body {
 .logo-container {
     width: 160px;
     height: 160px;
-    border: 3px solid #222;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -179,17 +178,39 @@ body {
 .title-container {
     flex: 1;
     text-align: center;
-    padding: 0 30px;
+    padding: 0 10px;
+}
+
+.title-with-motif {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.gada-icon {
+    flex-shrink: 0;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));
 }
 
 .newspaper-title {
     font-family: 'Tiro Devanagari Marathi', serif;
-    font-size: 95px; /* Large striking title */
+    font-size: 100px;
     font-weight: bold;
     color: var(--primary-color);
     margin: 0;
     line-height: 1.05;
     letter-spacing: 1.5px;
+    text-shadow: 2px 3px 5px rgba(0,0,0,0.2), 0 0 1px rgba(139,0,0,0.4);
+}
+
+.establishment {
+    font-size: 18px;
+    font-weight: bold;
+    color: #444;
+    margin-top: 5px;
+    font-family: 'Mukta', sans-serif;
+    letter-spacing: 1px;
 }
 
 .newspaper-slogan {
@@ -197,7 +218,7 @@ body {
     font-size: 26px; /* Elegant slogan */
     font-weight: bold;
     color: #222;
-    margin: 15px 0 0 0;
+    margin: 10px 0 0 0;
     letter-spacing: 0.5px;
 }
 
@@ -233,10 +254,10 @@ body {
 
 /* --------- Main Content (Columns) --------- */
 .columns {
-    column-count: 2; /* 2 Column layout */
-    column-gap: 60px; /* Proper gap between columns */
-    column-rule: 1px solid #ccc; /* Divider line */
-    height: 100%; /* fill the container */
+    column-count: var(--dynamic-col-count, 2);
+    column-gap: 50px;
+    column-rule: 1px solid #ccc;
+    height: 100%;
 }
 
 /* Embedded uploaded image inside the layout */
@@ -257,9 +278,9 @@ body {
 /* Article Texts */
 #article-content p {
     margin-top: 0;
-    margin-bottom: 22px;
-    font-size: 21px; /* Readable text */
-    line-height: 1.7;
+    margin-bottom: 0.8em;
+    font-size: var(--dynamic-font-size, 21px);
+    line-height: var(--dynamic-line-height, 1.7);
     color: #111;
     text-align: justify;
 }
@@ -267,12 +288,12 @@ body {
 /* Drop Cap Implementation for the first letter of the first paragraph */
 #article-content p:first-of-type::first-letter {
     font-family: 'Tiro Devanagari Marathi', serif;
-    font-size: 100px; /* Massive size */
+    font-size: 4.5em; /* Auto scales with dynamic font size */
     color: var(--primary-color);
     float: left;
     line-height: 0.8;
-    margin-right: 15px;
-    margin-top: 8px;
+    margin-right: 0.2em;
+    margin-top: 0.1em;
     padding: 0;
     font-weight: bold;
 }

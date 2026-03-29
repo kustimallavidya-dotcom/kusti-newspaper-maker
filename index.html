@@ -18,8 +18,9 @@
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
     
-    <!-- html2canvas Library (Used for HD Export) -->
+    <!-- html2canvas and jsPDF Libraries (Used for HD PNG and PDF Export) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -57,11 +58,14 @@
                 <label for="article-input">लेख (Content):
                     <span id="word-count" style="font-weight:normal; font-size:13px; color:#555; float:right;">शब्द: 0</span>
                 </label>
-                <textarea id="article-input" rows="12" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
-                <div style="font-size: 12px; color: #8b0000; margin-top: 5px; font-weight: bold;">* ३:४ या आकारात उत्तम दिसण्यासाठी लेख २५० ते ३०० शब्दांचा असावा.</div>
+                <textarea id="article-input" rows="11" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
+                <div style="font-size: 12px; color: #116000; margin-top: 5px; font-weight: bold; line-height: 1.4;">* ॲप आता आपोआप कॉलम (Columns) आणि अक्षरांचा आकार (Font Size) ऍडजस्ट करेल. (क्षमता: १५०० शब्द)</div>
             </div>
 
-            <button id="download-btn" class="primary-btn">Download as HD Image</button>
+            <div style="display: flex; gap: 10px; margin-top: auto;">
+                <button id="download-btn" class="primary-btn" style="flex:1;">HD Image (PNG)</button>
+                <button id="download-pdf-btn" class="primary-btn" style="flex:1; background-color:#b30000;">PDF File</button>
+            </div>
         </aside>
 
         <!-- Dynamic Preview Area (The Canvas) -->
@@ -75,7 +79,28 @@
                             <span id="logo-placeholder">Logo<br>Space</span>
                         </div>
                         <div class="title-container">
-                            <h1 class="newspaper-title">कुस्ती मल्लविद्या</h1>
+                            <div class="title-with-motif">
+                                <!-- Left Gada Motif -->
+                                <svg class="gada-icon" width="40" height="75" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="42" y="80" width="16" height="120" fill="#600000" rx="4"/>
+                                    <rect x="35" y="180" width="30" height="10" fill="#daa520" rx="3"/>
+                                    <circle cx="50" cy="50" r="38" fill="#8b0000"/>
+                                    <ellipse cx="50" cy="50" rx="45" ry="12" fill="#daa520"/>
+                                    <polygon points="40,12 60,12 50,0" fill="#daa520"/>
+                                </svg>
+
+                                <h1 class="newspaper-title">कुस्ती मल्लविद्या</h1>
+
+                                <!-- Right Gada Motif -->
+                                <svg class="gada-icon" width="40" height="75" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="42" y="80" width="16" height="120" fill="#600000" rx="4"/>
+                                    <rect x="35" y="180" width="30" height="10" fill="#daa520" rx="3"/>
+                                    <circle cx="50" cy="50" r="38" fill="#8b0000"/>
+                                    <ellipse cx="50" cy="50" rx="45" ry="12" fill="#daa520"/>
+                                    <polygon points="40,12 60,12 50,0" fill="#daa520"/>
+                                </svg>
+                            </div>
+                            <div class="establishment">स्थापना २००९</div>
                             <h3 class="newspaper-slogan">"गे मायभु तुझे मी फेडीन पांग सारे,<br>आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
                         </div>
                     </div>
