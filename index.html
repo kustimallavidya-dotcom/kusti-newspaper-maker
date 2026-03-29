@@ -32,9 +32,14 @@
             </div>
             
             <div class="control-group">
-                <label for="logo-upload">लोगो (Logo) अपलोड करा:</label>
+                <label for="logo-upload">वृत्तपत्राचा लोगो (Logo):</label>
                 <input type="file" id="logo-upload" accept="image/*">
                 <small style="color:#666; font-size:12px;">* लोगो एकदाच अपलोड करा, तो सेव्ह राहील.</small>
+            </div>
+
+            <div class="control-group">
+                <label for="manual-date">दिनांक आणि पंचांग (Date/Panchang):</label>
+                <input type="text" id="manual-date" placeholder="उदा. ज्येष्ठ कृष्ण नवमी, वसंत ऋतू | २१ मे २०२६" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
             </div>
 
             <div class="control-group" style="background: #f4f6f9; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
@@ -58,8 +63,8 @@
                 <label for="article-input">लेख (Content):
                     <span id="word-count" style="font-weight:normal; font-size:13px; color:#555; float:right;">शब्द: 0</span>
                 </label>
-                <textarea id="article-input" rows="11" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
-                <div style="font-size: 12px; color: #116000; margin-top: 5px; font-weight: bold; line-height: 1.4;">* ॲप आता आपोआप कॉलम (Columns) आणि अक्षरांचा आकार (Font Size) ऍडजस्ट करेल. (क्षमता: १५०० शब्द)</div>
+                <textarea id="article-input" rows="9" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
+                <div style="font-size: 12px; color: #116000; margin-top: 5px; font-weight: bold; line-height: 1.4;">* २००० शब्दांपर्यंत लेख टाका. ॲप आपोआप सर्व काही ऍडजस्ट करेल.</div>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: auto;">
@@ -72,59 +77,45 @@
         <main class="preview-area">
             <!-- This container will be exported by html2canvas -->
             <div id="newspaper-canvas">
-                <header class="newspaper-header">
-                    <div class="header-main">
-                        <div class="logo-container">
-                            <img id="logo-preview" src="" alt="Logo" style="display:none;">
-                            <span id="logo-placeholder">Logo<br>Space</span>
+                <header class="newspaper-header" style="border-bottom: 3px solid #111; padding-bottom: 10px; margin-bottom: 20px;">
+                    <div class="header-main" style="display: flex; align-items: center; justify-content: flex-start; gap: 30px;">
+                        <div class="logo-container" style="width: 130px; height: 130px; flex-shrink: 0; background: transparent;">
+                            <img id="logo-preview" src="" alt="Logo" style="display:none; max-width: 100%; max-height: 100%;">
+                            <span id="logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
                         </div>
-                        <div class="title-container">
-                            <div class="title-with-motif">
-                                <!-- Left Gada Motif -->
-                                <svg class="gada-icon" width="40" height="75" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="42" y="80" width="16" height="120" fill="#600000" rx="4"/>
-                                    <rect x="35" y="180" width="30" height="10" fill="#daa520" rx="3"/>
-                                    <circle cx="50" cy="50" r="38" fill="#8b0000"/>
-                                    <ellipse cx="50" cy="50" rx="45" ry="12" fill="#daa520"/>
-                                    <polygon points="40,12 60,12 50,0" fill="#daa520"/>
-                                </svg>
-
-                                <h1 class="newspaper-title">कुस्ती मल्लविद्या</h1>
-
-                                <!-- Right Gada Motif -->
-                                <svg class="gada-icon" width="40" height="75" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
-                                    <rect x="42" y="80" width="16" height="120" fill="#600000" rx="4"/>
-                                    <rect x="35" y="180" width="30" height="10" fill="#daa520" rx="3"/>
-                                    <circle cx="50" cy="50" r="38" fill="#8b0000"/>
-                                    <ellipse cx="50" cy="50" rx="45" ry="12" fill="#daa520"/>
-                                    <polygon points="40,12 60,12 50,0" fill="#daa520"/>
-                                </svg>
-                            </div>
-                            <div class="establishment">स्थापना २००९</div>
-                            <h3 class="newspaper-slogan">"गे मायभु तुझे मी फेडीन पांग सारे,<br>आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
-                        </div>
-                    </div>
-                    <div class="date-container">
-                        <div class="heavy-line"></div>
-                        <div id="current-date">दिनांक</div>
-                        <div class="light-line"></div>
-                    </div>
-
-                    <!-- Author Byline -->
-                    <div class="author-byline" id="author-byline" style="display:none;">
-                        <img id="author-photo-preview" src="" alt="Author Photo">
-                        <div class="author-details">
-                            <h4 id="author-name-display"></h4>
-                            <p id="author-role-display"></p>
+                        <div class="title-container" style="flex: 1; text-align: left;">
+                            <h1 class="newspaper-title" style="font-size: 85px; margin: 0; line-height: 1;">कुस्ती मल्लविद्या</h1>
+                            <div class="establishment" style="font-size: 18px; color: #444; margin-top: 5px;">स्थापना २००९</div>
+                            <h3 class="newspaper-slogan" style="font-size: 24px; margin: 10px 0 0 0; color:#222;">"गे मायभु तुझे मी फेडीन पांग सारे, आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
                         </div>
                     </div>
                 </header>
+
+                <div class="date-container" style="text-align: right; border-bottom: 1px dotted #ccc; padding-bottom: 8px; margin-bottom: 20px;">
+                    <div id="current-date" style="font-size: 18px; font-weight: 600; font-family: 'Mukta'; color: #333;"></div>
+                </div>
+
+                <!-- Professional Author Byline -->
+                <div class="author-byline" id="author-byline" style="display:none; align-items: center; margin-bottom: 25px; padding: 10px 15px; background: #f9f9f9; border-left: 4px solid #8b0000;">
+                    <img id="author-photo-preview" src="" alt="Author Photo" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                    <div class="author-details">
+                        <h4 id="author-name-display" style="margin: 0; font-size: 20px; font-family: 'Tiro Devanagari Marathi'; color: #8b0000;"></h4>
+                        <p id="author-role-display" style="margin: 0; font-size: 15px; font-family: 'Mukta'; color: #444;"></p>
+                    </div>
+                </div>
                 
                 <section class="newspaper-content">
                     <div id="article-content" class="columns">
                         <!-- Output generated in JS -->
                     </div>
                 </section>
+
+                <footer class="newspaper-footer" style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #ccc; text-align: center; font-size: 18px; font-weight: bold; font-family: 'Mukta'; color: #333; background: #fff;">
+                    <div style="display: flex; justify-content: center; gap: 40px;">
+                        <span>📺 YouTube: Kusti Mallavidya</span>
+                        <span>📸 Instagram: @kustimallavidya</span>
+                    </div>
+                </footer>
             </div>
         </main>
     </div>

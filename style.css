@@ -151,14 +151,13 @@ body {
 }
 
 .logo-container {
-    width: 160px;
-    height: 160px;
+    width: 130px;
+    height: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: 5px;
-    background: #fff;
+    background: transparent;
 }
 
 .logo-container img {
@@ -185,12 +184,6 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-}
-
-.gada-icon {
-    flex-shrink: 0;
-    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.3));
 }
 
 .newspaper-title {

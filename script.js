@@ -9,11 +9,19 @@ if ('serviceWorker' in navigator) {
 
 document.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------
-    // 1. Dynamic Date (Marathi Format)
+    // 1. Manual Date Input Setup
     // ---------------------------------
-    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    const dateStr = new Date().toLocaleDateString('mr-IN', dateOptions);
-    document.getElementById('current-date').innerText = 'दिनांक: ' + dateStr;
+    const manualDateInput = document.getElementById('manual-date');
+    const currentDateDisplay = document.getElementById('current-date');
+    const savedDate = localStorage.getItem('kusti-date') || '';
+    manualDateInput.value = savedDate;
+    currentDateDisplay.innerText = savedDate ? savedDate : 'येथे दिनांक दिसेल';
+
+    manualDateInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        currentDateDisplay.innerText = val ? val : 'येथे दिनांक दिसेल';
+        localStorage.setItem('kusti-date', val);
+    });
 
     // ---------------------------------
     // 2. Elements Configuration
@@ -67,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         wordCountSpan.innerText = `शब्द: ${words}`;
         
-        // Define scaling rules
+        // Define scaling rules specifically for 2000 Words max constraint
         let colCount = 2;
         let fontSize = "24px";
         let lineHeight = "1.8";
@@ -81,21 +89,25 @@ document.addEventListener('DOMContentLoaded', () => {
             lineHeight = "1.7";
         } else if (words <= 600) {
             colCount = 3;
-            fontSize = "19px";
-            lineHeight = "1.65";
+            fontSize = "18px";
+            lineHeight = "1.6";
         } else if (words <= 1000) {
             colCount = 3;
             fontSize = "16px";
             lineHeight = "1.5";
-        } else if (words <= 1400) {
+        } else if (words <= 1500) {
             colCount = 4;
-            fontSize = "15px";
+            fontSize = "14.5px";
             lineHeight = "1.45";
-        } else {
-            // max threshold fallback
+        } else if (words <= 2200) {
             colCount = 4;
             fontSize = "13px";
             lineHeight = "1.4";
+        } else {
+            // max threshold fallback for massive texts
+            colCount = 5;
+            fontSize = "12px";
+            lineHeight = "1.35";
         }
 
         // Apply dynamic styles to canvas content wrapper
@@ -198,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
     authorRoleInput.addEventListener('input', updateAuthorPreview);
 
     // Initial default placeholder state
-    articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. डावीकडे जाऊन लेख किंवा बातमीचे स्वरूप पाहू शकता. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही १५०० शब्दांपर्यंत इथे मोठे लेख टाकू शकता. शब्द वाढले की कॉलमची संख्या आणि अक्षरांचा आकार आपोआप योग्य रितीने ऍडजस्ट होतो!";
+    articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही २००० शब्दांपर्यंत इथे मोठे लेख टाकू शकता. शब्द वाढले की कॉलमची संख्या आणि अक्षरांचा आकार आपोआप योग्य रितीने ऍडजस्ट होतो!";
     
     // Initial Render
     updatePreview();
