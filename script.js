@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Manual Date Input Setup
     // ---------------------------------
     const manualDateInput = document.getElementById('manual-date');
-    const currentDateDisplay = document.getElementById('top-right-date'); // Fix: updated ID
+    const currentDateDisplay = document.getElementById('current-date-text'); // points to span inside top-right-date
     const savedDate = localStorage.getItem('kusti-date') || '';
     manualDateInput.value = savedDate;
     currentDateDisplay.innerText = savedDate ? savedDate : 'येथे दिनांक दिसेल';
@@ -118,19 +118,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (effectiveWords <= 350) {
             colCount = 2; lineHeight = "1.75"; pMargin = "0.75em"; colGap = "45px";
-            minF = 18; maxF = 28;
+            minF = 20; maxF = 36;
         } else if (effectiveWords <= 700) {
             colCount = 3; lineHeight = "1.6"; pMargin = "0.65em"; colGap = "40px";
-            minF = 15; maxF = 22;
+            minF = 16; maxF = 28;
         } else if (effectiveWords <= 1200) {
             colCount = 4; lineHeight = "1.45"; pMargin = "0.55em"; colGap = "35px";
-            minF = 12; maxF = 17;
+            minF = 13; maxF = 22;
         } else if (effectiveWords <= 1700) {
             colCount = 5; lineHeight = "1.35"; pMargin = "0.45em"; colGap = "30px";
-            minF = 10; maxF = 14;
+            minF = 11; maxF = 18;
         } else {
             colCount = 6; lineHeight = "1.25"; pMargin = "0.3em"; colGap = "20px";
-            minF = 8; maxF = 12;
+            minF = 9; maxF = 15;
         }
 
         // Initially render HTML Content inside the container to test fit
@@ -181,8 +181,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
         
-        // Apply optimized font size but slightly lower to guarantee safe padding
-        articleContentContainer.style.setProperty('--dynamic-font-size', (bestF - 0.2) + "px");
+        // Apply optimized font size — no safety buffer needed, overflow is hidden anyway
+        articleContentContainer.style.setProperty('--dynamic-font-size', bestF + "px");
     };
 
     const updateAuthorPreview = () => {

@@ -106,9 +106,10 @@
             <!-- This container will be exported by html2canvas -->
             <div id="newspaper-canvas" style="position: relative;">
                 
-                <!-- Date wrapped tightly top-right -->
-                <div id="top-right-date" style="position: absolute; right: 20px; top: 15px; text-align: right; font-size: 13px; font-weight: bold; color: #555; max-width: 180px; line-height: 1.4; border-bottom: 1px solid var(--primary-color);">
-                    <!-- JS injects manual date here -->
+                <!-- Date + Establishment: top-right corner -->
+                <div id="top-right-date" style="position: absolute; right: 20px; top: 12px; text-align: right; font-size: 13px; font-weight: bold; color: #555; max-width: 230px; line-height: 1.6;">
+                    <span id="current-date-text">येथे दिनांक दिसेल</span>
+                    <div id="establishment-display" style="color: var(--primary-color); font-size: 12px; font-family:'Mukta'; border-top: 1px solid var(--primary-color); margin-top: 2px; padding-top: 2px;">स्थापना २००९</div>
                 </div>
 
                 <header class="newspaper-header" style="border-bottom: 4px solid var(--primary-color); padding-bottom: 8px; margin-bottom: 15px; padding-top: 10px;">
@@ -122,9 +123,8 @@
                             <h1 id="newspaper-title-display" class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 85px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
                             <!-- AI Calligraphy Image Title (hidden by default) -->
                             <img id="title-image-display" src="" alt="Title" style="display:none; max-height: 110px; width: auto; max-width: 100%; object-fit: contain;">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px;">
+                            <div style="display: flex; justify-content: flex-start; align-items: flex-end; margin-top: 5px;">
                                 <h3 id="newspaper-slogan-display" class="newspaper-slogan" style="font-size: 20px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
-                                <div class="establishment" style="font-size: 16px; font-weight: bold; color: #444; font-family: 'Mukta'; margin-left: 10px;">स्थापना २००९</div>
                             </div>
                         </div>
                     </div>
@@ -139,7 +139,7 @@
                     </div>
                 </div>
                 
-                <h2 id="article-headline-display" style="font-family: 'Rozha One', serif; font-size: 38px; text-align: center; margin: 0 0 15px 0; color: #111; line-height: 1.2; display: none;"></h2>
+                <h2 id="article-headline-display" style="font-family: 'Rozha One', serif; font-size: 38px; text-align: center; margin: 0 0 15px 0; color: var(--primary-color); line-height: 1.2; display: none;"></h2>
                 
                 <section class="newspaper-content">
                     <div id="article-content" class="columns">
