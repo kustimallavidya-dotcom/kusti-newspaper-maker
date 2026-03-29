@@ -144,14 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
             headlineDisplay.style.display = 'none';
         }
 
-        // Logic for column counts and font ranges - TIGHTER TO FILL GAP
-        let colCount = 2, minF = 22, maxF = 40;
-        if (effectiveWords <= 550) { colCount = 2; minF = 20; maxF = 40; }
-        else if (effectiveWords <= 1100) { colCount = 3; minF = 17; maxF = 32; }
-        else if (effectiveWords <= 1750) { colCount = 4; minF = 14; maxF = 28; }
-        else if (effectiveWords <= 2500) { colCount = 5; minF = 11; maxF = 24; }
-        else { colCount = 6; minF = 10; maxF = 18; }
-
         let htmlContent = '';
         if (articleImageSrc) {
             htmlContent += `<div class="article-image-wrapper"><img src="${articleImageSrc}"></div>`;
@@ -161,50 +153,51 @@ document.addEventListener('DOMContentLoaded', () => {
             htmlContent += `<p>${parseFormatting(p)}</p>`;
         });
 
-        articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
         articleContentContainer.innerHTML = htmlContent;
 
-        // More precise Binary search for optimal font size
-        let bestF = minF;
-        const availableHeight = articleContentContainer.clientHeight;
-        const colWidth = (articleContentContainer.clientWidth - (50 * (colCount - 1))) / colCount;
-
-        // Create a hidden measurer to check vertical requirements
-        const measurer = document.createElement('div');
-        measurer.style.position = 'absolute';
-        measurer.style.visibility = 'hidden';
-        measurer.style.width = colWidth + 'px';
-        measurer.style.lineHeight = '1.7';
-        measurer.style.textAlign = 'justify';
-        
-        // Match actual CSS for paragraphs to ensure accurate measurement
-        const pStyle = `margin-top: 0; margin-bottom: 0.8em; font-family: 'Mukta', sans-serif;`;
-        let measurerContent = '';
-        if (articleImageSrc) measurerContent += `<div style="height: 350px; margin-bottom: 25px;"></div>`;
-        paragraphs.forEach((p, idx) => {
-            // First paragraph has drop cap - roughly 4 lines taller
-            const dropCapExtra = idx === 0 ? 'padding-top: 15px;' : '';
-            measurerContent += `<p style="${pStyle}${dropCapExtra}">${parseFormatting(p)}</p>`;
-        });
-        measurer.innerHTML = measurerContent;
-        document.body.appendChild(measurer);
-
-        for (let i = 0; i < 18; i++) {
-            let mid = (minF + maxF) / 2;
-            measurer.style.fontSize = mid + 'px';
-            
-            // If total height of text in one long column > (height of container * num columns)
-            // then it will overflow the available space
-            if (measurer.scrollHeight > (availableHeight * colCount) - 20) {
-                maxF = mid;
-            } else {
-                bestF = mid;
-                minF = mid;
-            }
+        // 1. Initial colCount guess
+        const colThresholds = [
+            { w: 500, c: 2 }, { w: 1000, c: 3 }, { w: 1600, c: 4 }, { w: 2300, c: 5 }
+        ];
+        let colCount = 6;
+        for (let t of colThresholds) {
+            if (effectiveWords <= t.w) { colCount = t.c; break; }
         }
-        document.body.removeChild(measurer);
-        
-        articleContentContainer.style.setProperty('--dynamic-font-size', (bestF - 0.3) + "px");
+
+        // 2. Binary search Font logic with live scrollWidth
+        const findOptimalFont = (count) => {
+            articleContentContainer.style.setProperty('--dynamic-col-count', count);
+            let minF = 8, maxF = 45, bestF = 8;
+            
+            for (let i = 0; i < 22; i++) {
+                let mid = (minF + maxF) / 2;
+                articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
+                
+                // Force layout reflow for accurate scrollWidth
+                const h = articleContentContainer.offsetHeight; 
+                
+                if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 4) {
+                    maxF = mid;
+                } else {
+                    bestF = mid;
+                    minF = mid;
+                }
+            }
+            return bestF;
+        };
+
+        // Try to fill the gap: if font is too small, reduce columns to make font bigger
+        let finalF = findOptimalFont(colCount);
+        if (finalF > 22 && colCount > 2) { 
+            colCount--; 
+            finalF = findOptimalFont(colCount); 
+        } else if (finalF < 10 && colCount < 7) {
+            // If even at 10px it overflows, try adding a column to save the text visibility
+            colCount++;
+            finalF = findOptimalFont(colCount);
+        }
+
+        articleContentContainer.style.setProperty('--dynamic-font-size', (finalF - 0.2) + "px");
         applyAllColors();
     };
 
