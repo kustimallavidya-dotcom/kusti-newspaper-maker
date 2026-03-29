@@ -9,98 +9,136 @@ if ('serviceWorker' in navigator) {
 
 document.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------
-    // 1. Manual Date Input Setup
-    // ---------------------------------
-    const manualDateInput = document.getElementById('manual-date');
-    const currentDateDisplay = document.getElementById('current-date-text'); // points to span inside top-right-date
-    const savedDate = localStorage.getItem('kusti-date') || '';
-    manualDateInput.value = savedDate;
-    currentDateDisplay.innerText = savedDate ? savedDate : 'येथे दिनांक दिसेल';
-
-    manualDateInput.addEventListener('input', (e) => {
-        const val = e.target.value;
-        currentDateDisplay.innerText = val ? val : 'येथे दिनांक दिसेल';
-        localStorage.setItem('kusti-date', val);
-    });
-
-    // ---------------------------------
-    // 1.5 Theme Selector Setup
-    // ---------------------------------
-    const themeSelector = document.getElementById('theme-selector');
-    const savedTheme = localStorage.getItem('kusti-theme') || '#8b0000';
-    themeSelector.value = savedTheme;
-    document.documentElement.style.setProperty('--primary-color', savedTheme);
-
-    themeSelector.addEventListener('change', (e) => {
-        const val = e.target.value;
-        document.documentElement.style.setProperty('--primary-color', val);
-        localStorage.setItem('kusti-theme', val);
-    });
-
-    // ---------------------------------
-    // 2. Elements Configuration
+    // 1. Core Elements
     // ---------------------------------
     const articleInput = document.getElementById('article-input');
     const articleContentContainer = document.getElementById('article-content');
     const wordCountSpan = document.getElementById('word-count');
+    
+    const manualDateInput = document.getElementById('manual-date');
+    const currentDateDisplay = document.getElementById('current-date-text');
+    const establishmentDisplay = document.getElementById('establishment-display');
 
-    // Branding
+    const newspaperTitleInput = document.getElementById('newspaper-title-input');
+    const newspaperSloganInput = document.getElementById('newspaper-slogan-input');
+    const newspaperTitleDisplay = document.getElementById('newspaper-title-display');
+    const newspaperSloganDisplay = document.getElementById('newspaper-slogan-display');
+    const headlineDisplay = document.getElementById('article-headline-display');
+    const headerElement = document.querySelector('.newspaper-header');
+
+    // Branding & Author
     const logoUpload = document.getElementById('logo-upload');
     const logoPreview = document.getElementById('logo-preview');
     const logoPlaceholder = document.getElementById('logo-placeholder');
-
-    // Author
     const authorNameInput = document.getElementById('author-name');
     const authorRoleInput = document.getElementById('author-role');
     const authorImageUpload = document.getElementById('author-image-upload');
-    
-    // Author Preview
     const authorByline = document.getElementById('author-byline');
     const authorNameDisplay = document.getElementById('author-name-display');
     const authorRoleDisplay = document.getElementById('author-role-display');
     const authorPhotoPreview = document.getElementById('author-photo-preview');
-
+    
     // Additional Media
     const imageUpload = document.getElementById('article-image-upload');
     const downloadBtn = document.getElementById('download-btn');
     const canvasElement = document.getElementById('newspaper-canvas');
 
+    // ---------------------------------
+    // 2. Granular Color Pickers
+    // ---------------------------------
+    const titleColorPicker = document.getElementById('title-color-picker');
+    const sloganColorPicker = document.getElementById('slogan-color-picker');
+    const dateColorPicker = document.getElementById('date-color-picker');
+    const headlineColorPicker = document.getElementById('headline-color-picker');
+    const articleColorPicker = document.getElementById('article-color-picker');
+    const headerLinePicker = document.getElementById('header-line-color');
+
+    const loadColors = () => {
+        const colors = JSON.parse(localStorage.getItem('kusti-colors') || '{}');
+        if (colors.title) titleColorPicker.value = colors.title;
+        if (colors.slogan) sloganColorPicker.value = colors.slogan;
+        if (colors.date) dateColorPicker.value = colors.date;
+        if (colors.headline) headlineColorPicker.value = colors.headline;
+        if (colors.article) articleColorPicker.value = colors.article;
+        if (colors.headerLine) headerLinePicker.value = colors.headerLine;
+        applyAllColors();
+    };
+
+    const saveColors = () => {
+        const colors = {
+            title: titleColorPicker.value,
+            slogan: sloganColorPicker.value,
+            date: dateColorPicker.value,
+            headline: headlineColorPicker.value,
+            article: articleColorPicker.value,
+            headerLine: headerLinePicker.value
+        };
+        localStorage.setItem('kusti-colors', JSON.stringify(colors));
+        applyAllColors();
+    };
+
+    const applyAllColors = () => {
+        newspaperTitleDisplay.style.color = titleColorPicker.value;
+        newspaperSloganDisplay.style.color = sloganColorPicker.value;
+        currentDateDisplay.style.color = dateColorPicker.value;
+        establishmentDisplay.style.color = dateColorPicker.value;
+        headlineDisplay.style.color = headlineColorPicker.value;
+        articleContentContainer.style.color = articleColorPicker.value;
+        headerElement.style.borderBottomColor = headerLinePicker.value;
+        establishmentDisplay.style.borderTopColor = headerLinePicker.value;
+        // Update general primary for author border
+        document.documentElement.style.setProperty('--primary-color', headerLinePicker.value);
+    };
+
+    [titleColorPicker, sloganColorPicker, dateColorPicker, headlineColorPicker, articleColorPicker, headerLinePicker].forEach(p => {
+        p.addEventListener('input', saveColors);
+    });
+
+    // ---------------------------------
+    // 3. Text Formatting Tools
+    // ---------------------------------
+    window.applyFormatting = (type) => {
+        const start = articleInput.selectionStart;
+        const end = articleInput.selectionEnd;
+        const text = articleInput.value;
+        const selectedText = text.substring(start, end);
+        if (!selectedText) return;
+
+        let formatted = '';
+        if (type === 'bold') formatted = `*${selectedText}*`;
+        if (type === 'italic') formatted = `_${selectedText}_`;
+        if (type === 'underline') formatted = `#${selectedText}#`;
+
+        articleInput.value = text.substring(0, start) + formatted + text.substring(end);
+        updatePreview();
+    };
+
+    const parseFormatting = (str) => {
+        return str
+            .replace(/\*(.*?)\*/g, '<strong style="font-weight:bold;">$1</strong>')
+            .replace(/_(.*?)_/g, '<em style="font-style:italic;">$1</em>')
+            .replace(/#(.*?)#/g, '<span style="text-decoration:underline;">$1</span>');
+    };
+
+    // ---------------------------------
+    // 4. Preview & Layout Logic
+    // ---------------------------------
     let articleImageSrc = null;
     let authorImageSrc = localStorage.getItem('kusti-author-photo') || null;
 
-    // Load Cached Logo
-    const cachedLogo = localStorage.getItem('kusti-logo');
-    if (cachedLogo) {
-        logoPreview.src = cachedLogo;
-        logoPreview.style.display = 'block';
-        logoPlaceholder.style.display = 'none';
-    }
-
-    // Load Cached Author
-    authorNameInput.value = localStorage.getItem('kusti-author-name') || '';
-    authorRoleInput.value = localStorage.getItem('kusti-author-role') || '';
-
-    // ---------------------------------
-    // 3. Document Updater Logic
-    // ---------------------------------
     const updatePreview = () => {
         const text = articleInput.value.trim();
         const paragraphs = text.split('\n').filter(p => p.trim() !== '');
         
-        // Word Count
         const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         wordCountSpan.innerText = `शब्द: ${words}`;
         
         let effectiveWords = words;
-        if (articleImageSrc) {
-            effectiveWords += 400; // An image roughly takes up 400-words equivalent of vertical space
-        }
+        if (articleImageSrc) effectiveWords += 400;
 
-        // Headline handling
         const headlineInputEl = document.getElementById('headline-input');
         const headlineInput = headlineInputEl ? headlineInputEl.value.trim() : '';
 
-        const headlineDisplay = document.getElementById('article-headline-display');
         if (headlineInput) {
             headlineDisplay.innerText = headlineInput;
             headlineDisplay.style.display = 'block';
@@ -108,99 +146,52 @@ document.addEventListener('DOMContentLoaded', () => {
             headlineDisplay.style.display = 'none';
         }
 
-        // Define base aesthetic configurations based on word boundaries
-        let colCount = 2;
-        let lineHeight = "1.8";
-        let pMargin = "0.7em";
-        let colGap = "45px";
-        let minF = 21;
-        let maxF = 32;
+        let colCount = 2, minF = 21, maxF = 32;
+        if (effectiveWords <= 350) { colCount = 2; minF = 20; maxF = 36; }
+        else if (effectiveWords <= 700) { colCount = 3; minF = 16; maxF = 28; }
+        else if (effectiveWords <= 1200) { colCount = 4; minF = 13; maxF = 22; }
+        else if (effectiveWords <= 1700) { colCount = 5; minF = 11; maxF = 18; }
+        else { colCount = 6; minF = 9; maxF = 15; }
 
-        if (effectiveWords <= 350) {
-            colCount = 2; lineHeight = "1.75"; pMargin = "0.75em"; colGap = "45px";
-            minF = 20; maxF = 36;
-        } else if (effectiveWords <= 700) {
-            colCount = 3; lineHeight = "1.6"; pMargin = "0.65em"; colGap = "40px";
-            minF = 16; maxF = 28;
-        } else if (effectiveWords <= 1200) {
-            colCount = 4; lineHeight = "1.45"; pMargin = "0.55em"; colGap = "35px";
-            minF = 13; maxF = 22;
-        } else if (effectiveWords <= 1700) {
-            colCount = 5; lineHeight = "1.35"; pMargin = "0.45em"; colGap = "30px";
-            minF = 11; maxF = 18;
-        } else {
-            colCount = 6; lineHeight = "1.25"; pMargin = "0.3em"; colGap = "20px";
-            minF = 9; maxF = 15;
-        }
-
-        // Initially render HTML Content inside the container to test fit
         let htmlContent = '';
-
         if (articleImageSrc) {
-            htmlContent += `
-                <div class="article-image-wrapper">
-                    <img src="${articleImageSrc}" alt="Article Highlight">
-                </div>
-            `;
+            htmlContent += `<div class="article-image-wrapper"><img src="${articleImageSrc}"></div>`;
         }
-
-        const parseBold = (str) => {
-            return str.replace(/\*(.*?)\*/g, '<strong style="color:var(--primary-color)">$1</strong>');
-        };
 
         paragraphs.forEach(p => {
-            htmlContent += `<p>${parseBold(p)}</p>`;
+            htmlContent += `<p>${parseFormatting(p)}</p>`;
         });
 
-        // Set layout variables
         articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
-        articleContentContainer.style.setProperty('--dynamic-line-height', lineHeight);
-        articleContentContainer.style.setProperty('--dynamic-margin-bottom', pMargin);
-        articleContentContainer.style.setProperty('--dynamic-col-gap', colGap);
-        
         articleContentContainer.innerHTML = htmlContent;
 
-        // --- Aggressive Auto-Fill Binary Search ---
-        // Dynamically find the absolute perfect font size so text reaches bottom without overflowing.
+        // Binary search for optimal font size
         let bestF = minF;
-        
-        // Temporarily ensure columns are constrained inside 100% height
         articleContentContainer.style.height = '100%';
-
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 12; i++) {
             let mid = (minF + maxF) / 2;
             articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
-            
-            // Check overflow. If scrollWidth > clientWidth, text pushed into hidden horizontal columns
-            // Meaning it overflowed vertically and got wrapped sideways.
             if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 5) {
-                maxF = mid; // Too big
+                maxF = mid;
             } else {
-                bestF = mid; // Fits, try making it even bigger
+                bestF = mid;
                 minF = mid;
             }
         }
-        
-        // Apply optimized font size — no safety buffer needed, overflow is hidden anyway
         articleContentContainer.style.setProperty('--dynamic-font-size', bestF + "px");
+        applyAllColors();
     };
 
     const updateAuthorPreview = () => {
         const name = authorNameInput.value.trim();
         const role = authorRoleInput.value.trim();
-        
-        // Save to cache
         localStorage.setItem('kusti-author-name', name);
         localStorage.setItem('kusti-author-role', role);
 
         if (name || role || authorImageSrc) {
             authorByline.style.display = 'flex';
-            if (authorImageSrc) {
-                authorPhotoPreview.src = authorImageSrc;
-                authorPhotoPreview.style.display = 'block';
-            } else {
-                authorPhotoPreview.style.display = 'none';
-            }
+            if (authorImageSrc) authorPhotoPreview.src = authorImageSrc;
+            authorPhotoPreview.style.display = authorImageSrc ? 'block' : 'none';
             authorNameDisplay.innerText = name ? 'लेखक: ' + name : '';
             authorRoleDisplay.innerText = role;
         } else {
@@ -209,18 +200,22 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ---------------------------------
-    // 5. File Upload Handlers
+    // 5. Shared Events
     // ---------------------------------
+    manualDateInput.addEventListener('input', (e) => {
+        currentDateDisplay.innerText = e.target.value || 'येथे दिनांक दिसेल';
+        localStorage.setItem('kusti-date', e.target.value);
+    });
+
     logoUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                const b64 = event.target.result;
-                logoPreview.src = b64;
+                logoPreview.src = event.target.result;
                 logoPreview.style.display = 'block';
                 logoPlaceholder.style.display = 'none';
-                localStorage.setItem('kusti-logo', b64); // Save logo
+                localStorage.setItem('kusti-logo', event.target.result);
             };
             reader.readAsDataURL(file);
         }
@@ -254,356 +249,140 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Handle Inputs
     articleInput.addEventListener('input', updatePreview);
-    
-    const headlineInputEl = document.getElementById('headline-input');
-    if (headlineInputEl) {
-        headlineInputEl.addEventListener('input', updatePreview);
-    }
-    
+    document.getElementById('headline-input').addEventListener('input', updatePreview);
     authorNameInput.addEventListener('input', updateAuthorPreview);
     authorRoleInput.addEventListener('input', updateAuthorPreview);
-
-    // Initial default placeholder state
-    articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही २००० शब्दांपर्यंत इथे मोठे लेख टाकू शकता. शब्द वाढले की कॉलमची संख्या आणि अक्षरांचा आकार आपोआप योग्य रितीने ऍडजस्ट होतो!";
-    
-    const newspaperTitleInput = document.getElementById('newspaper-title-input');
-    const newspaperSloganInput = document.getElementById('newspaper-slogan-input');
-    const newspaperTitleDisplay = document.getElementById('newspaper-title-display');
-    const newspaperSloganDisplay = document.getElementById('newspaper-slogan-display');
-
-    const updateNewspaperTitle = () => {
+    newspaperTitleInput.addEventListener('input', () => {
         newspaperTitleDisplay.innerText = newspaperTitleInput.value.trim() || "कुस्ती मल्लविद्या";
-    };
-
-    const updateNewspaperSlogan = () => {
+    });
+    newspaperSloganInput.addEventListener('input', () => {
         newspaperSloganDisplay.innerText = newspaperSloganInput.value.trim() || '"गे मायभु तुझे मी फेडीन पांग सारे..."';
-    };
-
-    newspaperTitleInput.addEventListener('input', updateNewspaperTitle);
-    newspaperSloganInput.addEventListener('input', updateNewspaperSlogan);
-
-    // Initializations
-    updatePreview();
-    updateAuthorPreview();
-    updateNewspaperTitle();
-    updateNewspaperSlogan();
+    });
 
     // ---------------------------------
-    // 5b. Theme Color Picker
-    // ---------------------------------
-    window.setTheme = function(color) {
-        // Apply to CSS variable (affects all themed elements)
-        document.documentElement.style.setProperty('--primary-color', color);
-        // Update custom picker display
-        const picker = document.getElementById('custom-color-input');
-        if (picker) picker.value = color;
-        const label = document.getElementById('current-color-label');
-        if (label) { label.innerText = color; label.style.color = color; }
-        // Highlight selected swatch
-        document.querySelectorAll('#color-swatches div').forEach(sw => {
-            sw.style.border = (sw.style.background === color || sw.getAttribute('onclick')?.includes(color))
-                ? '2px solid #333' : '2px solid transparent';
-            sw.style.transform = 'scale(1)';
-        });
-        localStorage.setItem('kusti-theme-color', color);
-    };
-
-    // Restore saved theme or use default dark red
-    const savedColor = localStorage.getItem('kusti-theme-color') || '#8b0000';
-    window.setTheme(savedColor);
-
-    // ---------------------------------
-    // 6. Gemini AI Assistant (New Feature)
+    // 6. AI Assistant (Pollinations Stable)
     // ---------------------------------
     window.toggleAIModal = function() {
         const modal = document.getElementById('ai-modal');
         const overlay = document.getElementById('ai-overlay');
-        const apiKeyInput = document.getElementById('gemini-api-key');
-        
-        // Auto-restore saved key
-        if (localStorage.getItem('gemini-api-key') && apiKeyInput && !apiKeyInput.value) {
-            apiKeyInput.value = localStorage.getItem('gemini-api-key');
-        }
-
         const isOpen = modal.style.display !== 'none';
         modal.style.display = isOpen ? 'none' : 'block';
         overlay.style.display = isOpen ? 'none' : 'block';
     };
 
-    window.switchAITab = function(tab) {
+    window.switchAITab = (tab) => {
         document.getElementById('tool-title').style.display = tab === 'title' ? 'block' : 'none';
         document.getElementById('tool-image').style.display = tab === 'image' ? 'block' : 'none';
-
-        const tabTitle = document.getElementById('tab-title');
-        const tabImage = document.getElementById('tab-image');
-
-        if (tab === 'title') {
-            tabTitle.style.color = 'var(--primary-color)';
-            tabTitle.style.background = '#f9f9f9';
-            tabTitle.style.borderBottom = '3px solid var(--primary-color)';
-            tabImage.style.color = '#888';
-            tabImage.style.background = 'white';
-            tabImage.style.borderBottom = '3px solid transparent';
-        } else {
-            tabImage.style.color = '#1a237e';
-            tabImage.style.background = '#f0f4ff';
-            tabImage.style.borderBottom = '3px solid #1a237e';
-            tabTitle.style.color = '#888';
-            tabTitle.style.background = 'white';
-            tabTitle.style.borderBottom = '3px solid transparent';
-        }
     };
 
     window.generateTitleCalligraphy = async function() {
         const titleName = document.getElementById('title-name-input').value.trim();
-        const styleHint = document.getElementById('title-style-input').value.trim();
-        if (!titleName) return alert('वृत्तपत्राचे नाव लिहा!');
-
-        // Auto load Gemini API key from storage
-        const apiKey = localStorage.getItem('gemini-api-key');
-        if (!apiKey) {
-            return alert('प्रथम Gemini API Key सेव्ह करा!\n\u201cफोटो बनवा” tab मध्ये जाउन API Key टाका.\naistudio.google.com वरून मोफत key मिळवा.');
-        }
+        const style = document.getElementById('title-style-input').value.trim();
+        if (!titleName) return alert('नाव लिहा!');
 
         document.getElementById('title-calligraphy-btn').style.display = 'none';
         document.getElementById('title-calligraphy-loading').style.display = 'block';
-        document.getElementById('title-calligraphy-result').style.display = 'none';
-        document.getElementById('title-calligraphy-loading').innerText = '⏳ Gemini ने Image तयार करत आहे...';
 
-        // Build a vivid English-language prompt for Indian newspaper masthead
-        const baseStyle = styleHint && styleHint.trim().length > 5
-            ? styleHint
-            : 'ornate traditional Indian art, wrestling and gada mace motifs';
+        // Pollinations.ai is free and always works for general illustrations
+        const prompt = `Indian newspaper masthead design, ${style}, white background, horizontal banner, high resolution art style`;
+        const encoded = encodeURIComponent(prompt);
+        const url = `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=320&nologo=true&seed=${Math.floor(Math.random()*1e9)}`;
 
-        const prompt = `An artistic newspaper masthead banner illustration. Style: ${baseStyle}. Colors: dark crimson red and gold on white background. Include decorative borders and ornate patterns. Horizontal banner format. Professional newspaper masthead art. High quality illustration.`;
-
-        try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
-                })
-            });
-
-            const data = await res.json();
-
-            if (data.error) throw new Error(data.error.message);
-
-            const parts = data.candidates?.[0]?.content?.parts || [];
-            const imgPart = parts.find(p => p.inlineData);
-
-            if (!imgPart) throw new Error('Gemini ने Image दिली नाही. prompt बदलून पुन्हा प्रयत्न करा.');
-
-            const imgSrc = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
-            const preview = document.getElementById('title-calligraphy-preview');
-            preview.src = imgSrc;
-
+        const img = document.getElementById('title-calligraphy-preview');
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
             document.getElementById('title-calligraphy-loading').style.display = 'none';
             document.getElementById('title-calligraphy-result').style.display = 'block';
             document.getElementById('title-calligraphy-btn').style.display = 'block';
-
-        } catch (err) {
+        };
+        img.onerror = () => {
+            alert('Image generation error. Try again.');
             document.getElementById('title-calligraphy-loading').style.display = 'none';
             document.getElementById('title-calligraphy-btn').style.display = 'block';
-            document.getElementById('title-calligraphy-loading').innerText = '⏳ कॅलिग्राफी Image तयार होत आहे...';
-            alert('Image तयार करता आली नाही: ' + err.message);
-        }
+        };
+        img.src = url;
     };
 
-    window.applyTitleImage = function() {
+    window.applyTitleImage = () => {
         const previewImg = document.getElementById('title-calligraphy-preview');
-        if (!previewImg.src) return;
-
-        // Fetch as base64 for html2canvas compatibility
-        fetch(previewImg.src)
-            .then(res => res.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const titleImageDisplay = document.getElementById('title-image-display');
-                    const titleTextDisplay = document.getElementById('newspaper-title-display');
-                    // Show image, hide text
-                    titleImageDisplay.src = e.target.result;
-                    titleImageDisplay.style.display = 'block';
-                    titleTextDisplay.style.display = 'none';
-                    window.toggleAIModal();
-                };
-                reader.readAsDataURL(blob);
-            })
-            .catch(() => {
-                // Direct URL fallback
-                const titleImageDisplay = document.getElementById('title-image-display');
-                const titleTextDisplay = document.getElementById('newspaper-title-display');
-                titleImageDisplay.src = previewImg.src;
-                titleImageDisplay.style.display = 'block';
-                titleTextDisplay.style.display = 'none';
-                window.toggleAIModal();
-            });
-    };
-
-    // Apply just the text title (no image)
-    window.applyTitleText = function() {
-        const titleName = document.getElementById('title-name-input').value.trim();
-        if (!titleName) return alert('नाव लिहा!');
-        
-        const titleInput = document.getElementById('newspaper-title-input');
-        const titleTextDisplay = document.getElementById('newspaper-title-display');
         const titleImageDisplay = document.getElementById('title-image-display');
-        
-        titleInput.value = titleName;
-        titleTextDisplay.innerText = titleName;
-        titleTextDisplay.style.display = 'block';
-        titleImageDisplay.style.display = 'none'; // Hide calligraphy image
+        const titleTextDisplay = document.getElementById('newspaper-title-display');
+        titleImageDisplay.src = previewImg.src;
+        titleImageDisplay.style.display = 'block';
+        titleTextDisplay.style.display = 'none';
         window.toggleAIModal();
     };
 
-    // Legacy aliases
-    window.generateTitle = window.generateTitleCalligraphy;
-    window.applyTitle = window.applyTitleText;
-
-    window.generateAIImage = async function() {
+    window.generateAIImage = async () => {
         const prompt = document.getElementById('image-ai-prompt').value.trim();
-        if (!prompt) return alert('फोटोचे वर्णन लिहा!');
-
-        const apiKey = localStorage.getItem('gemini-api-key');
-        if (!apiKey) {
-            return alert('Gemini API Key आवश्यक आहे!\nखाली API Key box मध्ये Key टाका.');
-        }
+        if (!prompt) return alert('वर्णन लिहा!');
 
         document.getElementById('image-gen-btn').style.display = 'none';
         document.getElementById('image-loading').style.display = 'block';
-        document.getElementById('image-result').style.display = 'none';
-        document.getElementById('image-loading').innerHTML = '<p style="text-align:center; margin:10px;">⏳ Gemini Image तयार करत आहे...</p>';
 
-        try {
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt + ', high quality, realistic, newspaper photo style' }] }],
-                    generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
-                })
-            });
+        const encoded = encodeURIComponent(prompt + ', high quality newspaper photo style');
+        const url = `https://image.pollinations.ai/prompt/${encoded}?width=800&height=600&nologo=true&seed=${Math.floor(Math.random()*1e9)}`;
 
-            const data = await res.json();
-            if (data.error) throw new Error(data.error.message);
-
-            const parts = data.candidates?.[0]?.content?.parts || [];
-            const imgPart = parts.find(p => p.inlineData);
-            if (!imgPart) throw new Error('Image मिळाली नाही. Prompt बदलून पुन्हा प्रयत्न करा.');
-
-            const imgSrc = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
-            document.getElementById('ai-generated-image').src = imgSrc;
-
+        const img = document.getElementById('ai-generated-image');
+        img.crossOrigin = "anonymous";
+        img.onload = () => {
             document.getElementById('image-loading').style.display = 'none';
             document.getElementById('image-result').style.display = 'block';
             document.getElementById('image-gen-btn').style.display = 'block';
-
-        } catch (err) {
-            document.getElementById('image-loading').style.display = 'none';
-            document.getElementById('image-gen-btn').style.display = 'block';
-            alert('Image तयार करता आली नाही: ' + err.message);
-        }
+        };
+        img.src = url;
     };
 
-    window.insertAIImage = function() {
-        const img = document.getElementById('ai-generated-image');
-        if (img.src) {
-            // Fetch image as base64 so it works with html2canvas
-            fetch(img.src)
-                .then(res => res.blob())
-                .then(blob => {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        articleImageSrc = e.target.result;
-                        updatePreview();
-                        window.toggleAIModal();
-                    };
-                    reader.readAsDataURL(blob);
-                })
-                .catch(() => {
-                    // Fallback: use src directly
-                    articleImageSrc = img.src;
-                    updatePreview();
-                    window.toggleAIModal();
-                });
-        }
+    window.insertAIImage = () => {
+        articleImageSrc = document.getElementById('ai-generated-image').src;
+        updatePreview();
+        window.toggleAIModal();
     };
 
-    // Legacy function kept for compatibility
-    window.generateAIContent = window.generateTitle;
+    // ---------------------------------
+    // 7. Initial State
+    // ---------------------------------
+    articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही २००० शब्दांपर्यंत इथे मोठे लेख टाकू शकता. शब्द वाढले की कॉलमची संख्या आणि अक्षरांचा आकार आपोआप योग्य रितीने ऍडजस्ट होतो!";
+    
+    // Restore Cached Data
+    const cachedLogo = localStorage.getItem('kusti-logo');
+    if (cachedLogo) {
+        logoPreview.src = cachedLogo;
+        logoPreview.style.display = 'block';
+        logoPlaceholder.style.display = 'none';
+    }
+    authorNameInput.value = localStorage.getItem('kusti-author-name') || '';
+    authorRoleInput.value = localStorage.getItem('kusti-author-role') || '';
+    manualDateInput.value = localStorage.getItem('kusti-date') || '';
+    currentDateDisplay.innerText = manualDateInput.value || 'येथे दिनांक दिसेल';
 
-    // ---------------------------------
-    // 7. HD Canvas Download Export (PNG)
-    // ---------------------------------
+    loadColors();
+    updatePreview();
+    updateAuthorPreview();
+
+    // Export PNG
     downloadBtn.addEventListener('click', () => {
-        const originalText = downloadBtn.innerText;
-        downloadBtn.innerText = "Exporting PNG...";
         downloadBtn.disabled = true;
-
-        html2canvas(canvasElement, {
-            scale: 4, 
-            useCORS: true, 
-            backgroundColor: '#ffffff',
-            logging: false,
-            windowWidth: canvasElement.scrollWidth,
-            windowHeight: canvasElement.scrollHeight
-        }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png', 1.0);
+        html2canvas(canvasElement, { scale: 4, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
             const link = document.createElement('a');
             link.download = `kusti-mallavidya-${Date.now()}.png`;
-            link.href = imgData;
+            link.href = canvas.toDataURL();
             link.click();
-            downloadBtn.innerText = originalText;
-            downloadBtn.disabled = false;
-        }).catch(err => {
-            console.error(err);
-            alert('चित्र तयार करताना काहीतरी चूक झाली.');
-            downloadBtn.innerText = originalText;
             downloadBtn.disabled = false;
         });
     });
 
-    // ---------------------------------
-    // 7. PDF Download Export
-    // ---------------------------------
-    const downloadPdfBtn = document.getElementById('download-pdf-btn');
-    downloadPdfBtn.addEventListener('click', () => {
-        const originalText = downloadPdfBtn.innerText;
-        downloadPdfBtn.innerText = "Exporting PDF...";
-        downloadPdfBtn.disabled = true;
-
-        html2canvas(canvasElement, {
-            scale: 3, // slightly lower to keep reasonable PDF size
-            useCORS: true, 
-            backgroundColor: '#ffffff',
-            logging: false,
-            windowWidth: canvasElement.scrollWidth,
-            windowHeight: canvasElement.scrollHeight
-        }).then(canvas => {
+    // Export PDF
+    document.getElementById('download-pdf-btn').addEventListener('click', () => {
+        const btn = document.getElementById('download-pdf-btn');
+        btn.disabled = true;
+        html2canvas(canvasElement, { scale: 3, useCORS: true }).then(canvas => {
             const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            // jsPDF logic for 3:4 orientation. e.g. 210mm x 280mm
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: [210, 280]
-            });
-            
+            const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 280] });
             pdf.addImage(imgData, 'JPEG', 0, 0, 210, 280);
             pdf.save(`kusti-mallavidya-${Date.now()}.pdf`);
-            
-            downloadPdfBtn.innerText = originalText;
-            downloadPdfBtn.disabled = false;
-        }).catch(err => {
-            console.error('PDF Export Error:', err);
-            alert('PDF तयार करताना काहीतरी चूक झाली.');
-            downloadPdfBtn.innerText = originalText;
-            downloadPdfBtn.disabled = false;
+            btn.disabled = false;
         });
     });
 });

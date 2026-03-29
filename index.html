@@ -55,43 +55,35 @@
                 <input type="text" id="manual-date" placeholder="उदा. ज्येष्ठ कृष्ण नवमी | २१ मे २०२६" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
             </div>
 
-            <div class="control-group">
-                <label>थीमचा रंग निवडा (Pick Theme Color):</label>
-                <!-- Color Swatches Palette -->
-                <div id="color-swatches" style="display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 10px 0;">
-                    <!-- Reds -->
-                    <div onclick="window.setTheme('#7b0000')" title="गडद लाल" style="width:28px;height:28px;border-radius:50%;background:#7b0000;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#c0392b')" title="लाल" style="width:28px;height:28px;border-radius:50%;background:#c0392b;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#e74c3c')" title="चेरी लाल" style="width:28px;height:28px;border-radius:50%;background:#e74c3c;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <!-- Oranges -->
-                    <div onclick="window.setTheme('#d35400')" title="गडद नारंगी" style="width:28px;height:28px;border-radius:50%;background:#d35400;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#e67e22')" title="नारंगी" style="width:28px;height:28px;border-radius:50%;background:#e67e22;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#f39c12')" title="सोनेरी" style="width:28px;height:28px;border-radius:50%;background:#f39c12;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <!-- Pinks -->
-                    <div onclick="window.setTheme('#c0136e')" title="गडद गुलाबी" style="width:28px;height:28px;border-radius:50%;background:#c0136e;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#e1306c')" title="गुलाबी" style="width:28px;height:28px;border-radius:50%;background:#e1306c;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#ff6b9d')" title="लाईट पिंक" style="width:28px;height:28px;border-radius:50%;background:#ff6b9d;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <!-- Blues -->
-                    <div onclick="window.setTheme('#1a237e')" title="गडद निळा" style="width:28px;height:28px;border-radius:50%;background:#1a237e;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#2980b9')" title="निळा" style="width:28px;height:28px;border-radius:50%;background:#2980b9;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <!-- Greens -->
-                    <div onclick="window.setTheme('#1a6b2a')" title="गडद हिरवा" style="width:28px;height:28px;border-radius:50%;background:#1a6b2a;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#27ae60')" title="हिरवा" style="width:28px;height:28px;border-radius:50%;background:#27ae60;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <!-- Purples -->
-                    <div onclick="window.setTheme('#5b2c6f')" title="जांभळा" style="width:28px;height:28px;border-radius:50%;background:#5b2c6f;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#8e44ad')" title="लाईट जांभळा" style="width:28px;height:28px;border-radius:50%;background:#8e44ad;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <!-- Browns -->
-                    <div onclick="window.setTheme('#6d4c41')" title="तपकिरी" style="width:28px;height:28px;border-radius:50%;background:#6d4c41;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#795548')" title="माती रंग" style="width:28px;height:28px;border-radius:50%;background:#795548;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <!-- Dark/Black -->
-                    <div onclick="window.setTheme('#212121')" title="काळा" style="width:28px;height:28px;border-radius:50%;background:#212121;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                    <div onclick="window.setTheme('#546e7a')" title="ग्रे" style="width:28px;height:28px;border-radius:50%;background:#546e7a;cursor:pointer;border:2px solid transparent;transition:transform 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.2);" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></div>
-                </div>
-                <!-- Custom color picker -->
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="color" id="custom-color-input" value="#8b0000" style="width:44px; height:36px; border:none; border-radius:6px; cursor:pointer; padding:0;" onchange="window.setTheme(this.value)" title="कोणताही रंग निवडा">
-                    <span style="font-size:13px; color:#555;">↑ कोणताही रंग निवडा</span>
-                    <span id="current-color-label" style="font-size:12px; font-weight:bold; color:var(--primary-color); font-family:monospace;">#8b0000</span>
+            <!-- Individual Color Controls -->
+            <div class="control-group" style="padding-top: 5px; border-top: 1px solid #ddd; margin-top: 10px;">
+                <label style="font-weight: bold; color: #333; margin-bottom: 8px; display: block;">रंग कस्टमायझेशन (Color Pickers):</label>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div>
+                        <label style="font-size: 11px;">Title Color:</label>
+                        <input type="color" id="title-color-picker" value="#8b0000" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px;">Slogan Color:</label>
+                        <input type="color" id="slogan-color-picker" value="#333333" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px;">Date Color:</label>
+                        <input type="color" id="date-color-picker" value="#555555" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px;">Headline Color:</label>
+                        <input type="color" id="headline-color-picker" value="#111111" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px;">Article Color:</label>
+                        <input type="color" id="article-color-picker" value="#000000" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
+                    </div>
+                    <div>
+                        <label style="font-size: 11px;">Header Line:</label>
+                        <input type="color" id="header-line-color" value="#8b0000" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
+                    </div>
                 </div>
             </div>
 
@@ -121,8 +113,17 @@
                 <label for="article-input">लेख (Content):
                     <span id="word-count" style="font-weight:normal; font-size:13px; color:#555; float:right;">शब्द: 0</span>
                 </label>
+                
+                <!-- Formatting Tools -->
+                <div style="display: flex; gap: 5px; margin-bottom: 5px; background: #eee; padding: 5px; border-radius: 4px;">
+                    <button onclick="applyFormatting('bold')" style="padding: 2px 8px; font-weight: bold; cursor: pointer;">B</button>
+                    <button onclick="applyFormatting('italic')" style="padding: 2px 8px; font-style: italic; cursor: pointer;">I</button>
+                    <button onclick="applyFormatting('underline')" style="padding: 2px 8px; text-decoration: underline; cursor: pointer;">U</button>
+                    <small style="margin-left: auto; color: #666; font-size: 10px; align-self: center;">(निवडा आणि बटण दाबा)</small>
+                </div>
+
                 <textarea id="article-input" rows="9" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
-                <div style="font-size: 12px; color: #116000; margin-top: 5px; font-weight: bold; line-height: 1.4;">* २००० शब्दांपर्यंत लेख टाका. ॲप आपोआप सर्व काही ऍडजस्ट करेल.</div>
+                <div style="font-size: 11px; color: #d35400; margin-top: 5px; font-weight: bold;">* २००० शब्दांपर्यंत लेख टाका. * अक्षरांच्या दोन्ही बाजूला (उदा. *text*) असल्यास ते Bold होईल.</div>
             </div>
 
             <div style="display: flex; gap: 10px; margin-top: auto;">
