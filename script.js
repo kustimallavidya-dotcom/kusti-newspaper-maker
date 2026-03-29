@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const headlineColorPicker = document.getElementById('headline-color-picker');
     const articleColorPicker = document.getElementById('article-color-picker');
     const headerLinePicker = document.getElementById('header-line-color');
+    const authorBgColorPicker = document.getElementById('author-bg-color');
 
     const loadColors = () => {
         const colors = JSON.parse(localStorage.getItem('kusti-colors') || '{}');
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (colors.headline) headlineColorPicker.value = colors.headline;
         if (colors.article) articleColorPicker.value = colors.article;
         if (colors.headerLine) headerLinePicker.value = colors.headerLine;
+        if (colors.authorBg) authorBgColorPicker.value = colors.authorBg;
         applyAllColors();
     };
 
@@ -71,7 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
             date: dateColorPicker.value,
             headline: headlineColorPicker.value,
             article: articleColorPicker.value,
-            headerLine: headerLinePicker.value
+            headerLine: headerLinePicker.value,
+            authorBg: authorBgColorPicker.value
         };
         localStorage.setItem('kusti-colors', JSON.stringify(colors));
         applyAllColors();
@@ -86,38 +89,22 @@ document.addEventListener('DOMContentLoaded', () => {
         articleContentContainer.style.color = articleColorPicker.value;
         headerElement.style.borderBottomColor = headerLinePicker.value;
         establishmentDisplay.style.borderTopColor = headerLinePicker.value;
+        authorByline.style.backgroundColor = authorBgColorPicker.value;
         // Update general primary for author border
         document.documentElement.style.setProperty('--primary-color', headerLinePicker.value);
     };
 
-    [titleColorPicker, sloganColorPicker, dateColorPicker, headlineColorPicker, articleColorPicker, headerLinePicker].forEach(p => {
+    [titleColorPicker, sloganColorPicker, dateColorPicker, headlineColorPicker, articleColorPicker, headerLinePicker, authorBgColorPicker].forEach(p => {
         p.addEventListener('input', saveColors);
     });
 
     // ---------------------------------
     // 3. Text Formatting Tools
     // ---------------------------------
-    window.applyFormatting = (type) => {
-        const start = articleInput.selectionStart;
-        const end = articleInput.selectionEnd;
-        const text = articleInput.value;
-        const selectedText = text.substring(start, end);
-        if (!selectedText) return;
-
-        let formatted = '';
-        if (type === 'bold') formatted = `*${selectedText}*`;
-        if (type === 'italic') formatted = `_${selectedText}_`;
-        if (type === 'underline') formatted = `#${selectedText}#`;
-
-        articleInput.value = text.substring(0, start) + formatted + text.substring(end);
-        updatePreview();
-    };
 
     const parseFormatting = (str) => {
         return str
-            .replace(/\*(.*?)\*/g, '<strong style="font-weight:bold;">$1</strong>')
-            .replace(/_(.*?)_/g, '<em style="font-style:italic;">$1</em>')
-            .replace(/#(.*?)#/g, '<span style="text-decoration:underline;">$1</span>');
+            .replace(/\*(.*?)\*/g, '<strong style="font-weight:bold;">$1</strong>');
     };
 
     // ---------------------------------

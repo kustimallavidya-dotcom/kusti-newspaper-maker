@@ -83,6 +83,10 @@
                         <label style="font-size: 11px;">Header Line:</label>
                         <input type="color" id="header-line-color" value="#8b0000" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
                     </div>
+                    <div>
+                        <label style="font-size: 11px;">Author BG:</label>
+                        <input type="color" id="author-bg-color" value="#f9f9f9" style="width:100%; height:30px; border:none; border-radius:4px; padding:0; cursor:pointer;">
+                    </div>
                 </div>
             </div>
 
@@ -112,14 +116,6 @@
                 <label for="article-input">लेख (Content):
                     <span id="word-count" style="font-weight:normal; font-size:13px; color:#555; float:right;">शब्द: 0</span>
                 </label>
-                
-                <!-- Formatting Tools -->
-                <div style="display: flex; gap: 5px; margin-bottom: 5px; background: #eee; padding: 5px; border-radius: 4px;">
-                    <button onclick="applyFormatting('bold')" style="padding: 2px 8px; font-weight: bold; cursor: pointer;">B</button>
-                    <button onclick="applyFormatting('italic')" style="padding: 2px 8px; font-style: italic; cursor: pointer;">I</button>
-                    <button onclick="applyFormatting('underline')" style="padding: 2px 8px; text-decoration: underline; cursor: pointer;">U</button>
-                    <small style="margin-left: auto; color: #666; font-size: 10px; align-self: center;">(निवडा आणि बटण दाबा)</small>
-                </div>
 
                 <textarea id="article-input" rows="9" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
                 <div style="font-size: 11px; color: #d35400; margin-top: 5px; font-weight: bold;">* २००० शब्दांपर्यंत लेख टाका. * अक्षरांच्या दोन्ही बाजूला (उदा. *text*) असल्यास ते Bold होईल.</div>
@@ -159,7 +155,7 @@
                 </header>
 
                 <!-- Professional Author Byline -->
-                <div class="author-byline" id="author-byline" style="display:none; align-items: center; margin-bottom: 15px; padding: 8px 12px; background: #f9f9f9; border-left: 4px solid var(--primary-color);">
+                <div class="author-byline" id="author-byline" style="display:none; align-items: center; margin-bottom: 15px; padding: 12px 15px; background: #f9f9f9;">
                     <img id="author-photo-preview" src="" alt="Author Photo" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
                     <div class="author-details">
                         <h4 id="author-name-display" style="margin: 0; font-size: 19px; font-family: 'Tiro Devanagari Marathi'; color: var(--primary-color);"></h4>
