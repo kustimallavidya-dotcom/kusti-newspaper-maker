@@ -196,48 +196,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         articleContentContainer.innerHTML = htmlContent;
 
-        // 1. Initial colCount guess - slightly more conservative
-        let colCount = 6;
-        if (effectiveWords <= 550) colCount = 2;
-        else if (effectiveWords <= 1000) colCount = 3;
-        else if (effectiveWords <= 1500) colCount = 4;
-        else if (effectiveWords <= 2200) colCount = 5;
-
-        // 2. Binary search Font logic with live scrollWidth
-        const findOptimalFont = (count) => {
-            articleContentContainer.style.setProperty('--dynamic-col-count', count);
-            let minF = 9, maxF = 45, bestF = 9;
-            
-            for (let i = 0; i < 22; i++) {
-                let mid = (minF + maxF) / 2;
-                articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
-                const h = articleContentContainer.offsetHeight; // Reflow
-                
-                if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 5) {
-                    maxF = mid;
-                } else {
-                    bestF = mid;
-                    minF = mid;
-                }
-            }
-            return bestF;
-        };
-
-        // 3. Gap Filling Strategy: Iteratively reduce colCount if it leaves a large gap
-        let finalF = findOptimalFont(colCount);
+        // 1. Logic for font size and column count based on content length
+        // Since canvas now expands vertically, we don't need binary search.
+        let colCount = 4;
+        let finalF = 18;
         
-        // If font is too big, it fills the page, so we are good.
-        // If font is medium but there's still a gap, try reducing columns to force font bigger.
-        while (finalF > 19 && colCount > 2) {
-            colCount--;
-            finalF = findOptimalFont(colCount);
-        }
-        
-        // Final polish: if at currently chosen colCount, the font is still tiny (<11px) 
-        // and we have a lot of text, we MUST keep columns high. 
-        // But if font is reasonable (14px+) we try to stay at lower colCount to fill vertical space.
+        if (effectiveWords <= 250) { colCount = 2; finalF = 26; }
+        else if (effectiveWords <= 450) { colCount = 2; finalF = 22; }
+        else if (effectiveWords <= 800) { colCount = 3; finalF = 20; }
+        else if (effectiveWords <= 1200) { colCount = 3; finalF = 18; }
+        else if (effectiveWords <= 1800) { colCount = 4; finalF = 17; }
+        else { colCount = 5; finalF = 16; } // Keeps expanding height naturally
 
-        articleContentContainer.style.setProperty('--dynamic-font-size', (finalF - 0.2) + "px");
+        articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
+        articleContentContainer.style.setProperty('--dynamic-font-size', finalF + "px");
+
         applyAllColors();
     };
 
@@ -390,8 +363,10 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             html2canvas(canvasElement, { scale: 3, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: [210, 280] });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 280);
+                const pdfWidth = 210;
+                const pdfHeight = (canvas.height / canvas.width) * pdfWidth;
+                const pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: [pdfWidth, pdfHeight] });
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
                 pdf.save(`kusti-mallavidya-${Date.now()}.pdf`);
                 restoreExport();
                 btn.disabled = false;
