@@ -84,6 +84,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadBtn = document.getElementById('download-btn');
     const canvasElement = document.getElementById('newspaper-canvas');
 
+    // Drawer Elements (Mobile)
+    const drawerToggle = document.getElementById('drawer-toggle');
+    const drawerClose = document.getElementById('drawer-close');
+    const dashboard = document.querySelector('.dashboard');
+
+    if (drawerToggle && drawerClose && dashboard) {
+        drawerToggle.addEventListener('click', () => {
+            dashboard.classList.add('drawer-open');
+        });
+        drawerClose.addEventListener('click', () => {
+            dashboard.classList.remove('drawer-open');
+        });
+    }
+
     // ---------------------------------
     // 2. Granular Color Pickers
     // ---------------------------------
