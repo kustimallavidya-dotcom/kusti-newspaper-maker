@@ -296,85 +296,141 @@ document.addEventListener('DOMContentLoaded', () => {
     window.toggleAIModal = function() {
         const modal = document.getElementById('ai-modal');
         const overlay = document.getElementById('ai-overlay');
-        const aiApiKeyInput = document.getElementById('gemini-api-key');
+        const apiKeyInput = document.getElementById('gemini-api-key');
         
-        // Auto load key if saved
-        if(localStorage.getItem('gemini-api-key') && !aiApiKeyInput.value) {
-            aiApiKeyInput.value = localStorage.getItem('gemini-api-key');
+        // Auto-restore saved key
+        if (localStorage.getItem('gemini-api-key') && apiKeyInput && !apiKeyInput.value) {
+            apiKeyInput.value = localStorage.getItem('gemini-api-key');
         }
 
-        if(modal.style.display === 'none') {
-            modal.style.display = 'block';
-            overlay.style.display = 'block';
+        const isOpen = modal.style.display !== 'none';
+        modal.style.display = isOpen ? 'none' : 'block';
+        overlay.style.display = isOpen ? 'none' : 'block';
+    };
+
+    window.switchAITab = function(tab) {
+        document.getElementById('tool-title').style.display = tab === 'title' ? 'block' : 'none';
+        document.getElementById('tool-image').style.display = tab === 'image' ? 'block' : 'none';
+
+        const tabTitle = document.getElementById('tab-title');
+        const tabImage = document.getElementById('tab-image');
+
+        if (tab === 'title') {
+            tabTitle.style.color = 'var(--primary-color)';
+            tabTitle.style.background = '#f9f9f9';
+            tabTitle.style.borderBottom = '3px solid var(--primary-color)';
+            tabImage.style.color = '#888';
+            tabImage.style.background = 'white';
+            tabImage.style.borderBottom = '3px solid transparent';
         } else {
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
+            tabImage.style.color = '#1a237e';
+            tabImage.style.background = '#f0f4ff';
+            tabImage.style.borderBottom = '3px solid #1a237e';
+            tabTitle.style.color = '#888';
+            tabTitle.style.background = 'white';
+            tabTitle.style.borderBottom = '3px solid transparent';
         }
     };
 
-    window.generateAIContent = async function() {
+    window.generateTitle = async function() {
         const apiKey = document.getElementById('gemini-api-key').value.trim();
-        const prompt = document.getElementById('ai-prompt').value.trim();
-        const targetElementId = document.getElementById('ai-target-section').value;
-        const generateBtn = document.getElementById('ai-generate-btn');
+        const prompt = document.getElementById('title-ai-prompt').value.trim();
+        const btn = document.getElementById('title-gen-btn');
 
-        if(!apiKey) return alert("Gemini API Key भरणे अनिवार्य आहे!");
-        if(!prompt) return alert("तुमचा प्राँप्ट लिहिणे अनिवार्य आहे!");
+        if (!apiKey) return alert('Gemini API Key भरा!');
+        if (!prompt) return alert('तुम्हाला कसले नाव हवे ते लिहा!');
 
-        // Save key for future
         localStorage.setItem('gemini-api-key', apiKey);
-
-        generateBtn.innerText = "⏳ Generating...";
-        generateBtn.disabled = true;
+        btn.innerText = '⏳ तयार होत आहे...';
+        btn.disabled = true;
+        document.getElementById('title-result').style.display = 'none';
 
         try {
-            // Target-specific system instructions for clean output
-            const systemInstructions = {
-                'article-input': `You are an expert Marathi newspaper journalist. Write ONLY the article body text in fluent Marathi. No headings, no asterisks, no markdown. Write each paragraph on a new line. Do not include title or byline.`,
-                'headline-input': `You are a Marathi newspaper headline writer. Output ONLY a single short punchy headline in Marathi. Maximum 10 words. No quotation marks, no punctuation at end, no explanation.`,
-                'newspaper-title-input': `Output ONLY the newspaper name in Marathi. Maximum 3-4 words. Just the name itself, nothing else. Example output: कुस्ती मल्लविद्या`,
-                'newspaper-slogan-input': `Output ONLY a single short inspiring slogan/tagline in Marathi. Maximum 12 words. Just the slogan text, no quotes, no explanation.`
-            };
-
-            const selectedInstruction = systemInstructions[targetElementId] || systemInstructions['article-input'];
-            const fullPrompt = `${selectedInstruction}\n\nUser request: ${prompt}`;
-
+            const instruction = `Output ONLY a single short attractive Marathi newspaper name (maximum 4 words). Just the name itself, nothing else. No punctuation, no quotes, no explanation.`;
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: fullPrompt }]}]
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: `${instruction}\n\nUser request: ${prompt}` }] }] })
             });
 
             const data = await response.json();
-            
-            if(data.error) {
-                alert("Gemini Error: " + data.error.message);
+            if (data.error) {
+                alert('Error: ' + data.error.message);
             } else {
-                const textResult = data.candidates[0].content.parts[0].text.trim();
-                const targetInput = document.getElementById(targetElementId);
-                
-                targetInput.value = textResult;
-                
-                // Immediately update preview
-                if(targetElementId === 'article-input' || targetElementId === 'headline-input') {
-                    updatePreview();
-                } else if(targetElementId === 'newspaper-title-input') {
-                    updateNewspaperTitle();
-                } else if(targetElementId === 'newspaper-slogan-input') {
-                    updateNewspaperSlogan();
-                }
-                
-                window.toggleAIModal();
+                const result = data.candidates[0].content.parts[0].text.trim();
+                document.getElementById('title-result-text').innerText = result;
+                document.getElementById('title-result').style.display = 'block';
             }
-        } catch(err) {
-            alert("Network Error: " + err.message);
+        } catch (err) {
+            alert('Network Error: ' + err.message);
         } finally {
-            generateBtn.innerHTML = "✨ जनरेट करा";
-            generateBtn.disabled = false;
+            btn.innerText = '✨ नाव सुचवा';
+            btn.disabled = false;
         }
     };
+
+    window.applyTitle = function() {
+        const newTitle = document.getElementById('title-result-text').innerText.trim();
+        if (newTitle) {
+            const titleInput = document.getElementById('newspaper-title-input');
+            titleInput.value = newTitle;
+            updateNewspaperTitle();
+            window.toggleAIModal();
+        }
+    };
+
+    window.generateAIImage = function() {
+        const prompt = document.getElementById('image-ai-prompt').value.trim();
+        if (!prompt) return alert('फोटोचे वर्णन English मध्ये लिहा!');
+
+        document.getElementById('image-gen-btn').style.display = 'none';
+        document.getElementById('image-loading').style.display = 'block';
+        document.getElementById('image-result').style.display = 'none';
+
+        // Use Pollinations.ai (Free, no API key needed)
+        const encoded = encodeURIComponent(prompt + ', high quality, newspaper photo style, realistic');
+        const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=800&height=600&nologo=true&seed=${Date.now()}`;
+
+        const img = document.getElementById('ai-generated-image');
+        img.onload = function() {
+            document.getElementById('image-loading').style.display = 'none';
+            document.getElementById('image-result').style.display = 'block';
+            document.getElementById('image-gen-btn').style.display = 'block';
+        };
+        img.onerror = function() {
+            document.getElementById('image-loading').style.display = 'none';
+            document.getElementById('image-gen-btn').style.display = 'block';
+            alert('फोटो बनवण्यात अडचण आली. पुन्हा प्रयत्न करा.');
+        };
+        img.src = imageUrl;
+    };
+
+    window.insertAIImage = function() {
+        const img = document.getElementById('ai-generated-image');
+        if (img.src) {
+            // Fetch image as base64 so it works with html2canvas
+            fetch(img.src)
+                .then(res => res.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        articleImageSrc = e.target.result;
+                        updatePreview();
+                        window.toggleAIModal();
+                    };
+                    reader.readAsDataURL(blob);
+                })
+                .catch(() => {
+                    // Fallback: use src directly
+                    articleImageSrc = img.src;
+                    updatePreview();
+                    window.toggleAIModal();
+                });
+        }
+    };
+
+    // Legacy function kept for compatibility
+    window.generateAIContent = window.generateTitle;
 
     // ---------------------------------
     // 7. HD Canvas Download Export (PNG)

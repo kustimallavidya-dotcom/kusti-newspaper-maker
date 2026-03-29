@@ -175,37 +175,63 @@
         </main>
     </div>
     
-    <!-- AI Modal HTML -->
-    <div id="ai-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:25px; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.3); z-index:1000; width:90%; max-width:480px; font-family: 'Mukta';">
-        <h3 style="margin-top:0; color:var(--primary-color); font-family:'Tiro Devanagari Marathi'; display: flex; align-items: center; gap: 8px;">
-            ✨ एआय बातमी जनरेटर (Gemini Magic)
-        </h3>
-        <p style="font-size:14px; color:#555; margin-bottom:15px; line-height: 1.4;">एक विषय किंवा बातमीचा गोषवारा लिहा आणि आम्ही तुमच्यासाठी पूर्ण व्यावसायिक लेख, शीर्षक किंवा नाव तयार करू!</p>
+    <!-- AI Modal HTML - Simplified 2-Tool Version -->
+    <div id="ai-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.35); z-index:1000; width:92%; max-width:500px; font-family: 'Mukta'; overflow:hidden;">
         
-        <label style="font-size:14px; font-weight:bold; color: #333;">काय तयार करायचे आहे? (Target Field):</label>
-        <select id="ai-target-section" style="width:100%; padding:10px; margin-bottom:15px; margin-top:5px; border:1px solid #ccc; border-radius:4px; font-family: 'Mukta'; font-size: 15px; background: #fafafa;">
-            <option value="article-input">📰 मुख्य लेख पूर्ण करा (Article Content)</option>
-            <option value="headline-input">📣 बातमीचे शीर्षक (Catchy Headline)</option>
-            <option value="newspaper-title-input">🏛️ वृत्तपत्राचे नाव बदला (Newspaper Title)</option>
-            <option value="newspaper-slogan-input">🖋️ ब्रीदवाक्य / स्लोगन (Newspaper Slogan)</option>
-        </select>
-        
-        <label style="font-size:14px; font-weight:bold; color: #333;">प्राँप्ट (काय लिहायचे आहे?):</label>
-        <textarea id="ai-prompt" rows="5" placeholder="उदा. 'सिकंदर शेखने पंजाब कुस्ती स्पर्धेत मिळवलेल्या मोठ्या विजयावर एक सविस्तर आणि रोमहर्षक बातमी ५०० शब्दांत लिहा...'" style="width:100%; padding:10px; margin-bottom:15px; margin-top:5px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta'; font-size: 14px; resize: none;"></textarea>
-
-        <label style="font-size:12px; font-weight:bold; color: #777;">Gemini API Key (तुमची स्वतःची API की):</label>
-        <div style="display: flex; gap: 10px; margin-top: 5px; margin-bottom: 25px;">
-            <input type="password" id="gemini-api-key" placeholder="Paste Gemini API Key..." style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family: monospace;">
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size: 11px; align-self: center; color: #0066cc; text-decoration: none; white-space: nowrap;">Get Free Key</a>
+        <!-- Modal Header -->
+        <div style="background: var(--primary-color); padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin:0; color:white; font-family:'Tiro Devanagari Marathi'; font-size: 20px;">✨ AI साधने</h3>
+            <button onclick="window.toggleAIModal()" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:50%; width:32px; height:32px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center;">×</button>
         </div>
-        
-        <div style="display:flex; gap:10px;">
-            <button onclick="window.generateAIContent()" id="ai-generate-btn" style="flex:2; background:#000; color:white; border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">✨ जनरेट करा</button>
-            <button onclick="window.toggleAIModal()" style="flex:1; background:#efefef; color:#333; border:1px solid #ccc; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 15px;">बंद करा</button>
+
+        <!-- Tool Tabs -->
+        <div style="display:flex; border-bottom: 2px solid #eee;">
+            <button id="tab-title" onclick="window.switchAITab('title')" style="flex:1; padding:12px; background:#f9f9f9; border:none; font-family:'Mukta'; font-size:15px; font-weight:bold; cursor:pointer; color:var(--primary-color); border-bottom: 3px solid var(--primary-color);">✨ Title सुधारा</button>
+            <button id="tab-image" onclick="window.switchAITab('image')" style="flex:1; padding:12px; background:white; border:none; font-family:'Mukta'; font-size:15px; font-weight:bold; cursor:pointer; color:#888; border-bottom: 3px solid transparent;">🖼️ फोटो बनवा</button>
+        </div>
+
+        <!-- Tool 1: Title AI -->
+        <div id="tool-title" style="padding:22px;">
+            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">वृत्तपत्राचे नाव अधिक आकर्षक कसे हवे आहे ते सांगा. AI एक सुंदर नाव सुचवेल.</p>
+            <label style="font-size:13px; font-weight:bold; color:#333;">तुम्हाला कसले नाव हवे आहे?</label>
+            <textarea id="title-ai-prompt" rows="3" placeholder="उदा. कुस्ती आणि मल्लविद्येशी संबंधित, राजेशाही आणि ताकदीचा भाव असलेले नाव सुचवा..." style="width:100%; margin-top:6px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:14px; resize:none; box-sizing:border-box;"></textarea>
+
+            <label style="font-size:12px; font-weight:bold; color:#777; margin-top:12px; display:block;">Gemini API Key:</label>
+            <div style="display:flex; gap:8px; margin-top:4px;">
+                <input type="password" id="gemini-api-key" placeholder="Paste API Key..." style="flex:1; padding:8px; border:1px solid #ddd; border-radius:6px; font-family:monospace; font-size:13px;">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="align-self:center; font-size:11px; color:#0066cc; text-decoration:none; white-space:nowrap;">मोफत मिळवा</a>
+            </div>
+
+            <button onclick="window.generateTitle()" id="title-gen-btn" style="width:100%; margin-top:16px; padding:13px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; font-family:'Mukta';">✨ नाव सुचवा</button>
+            <div id="title-result" style="display:none; margin-top:14px; padding:14px; background:#fff8e1; border-radius:8px; border-left:4px solid var(--primary-color);">
+                <p style="margin:0 0 6px 0; font-size:12px; color:#666;">AI चे सुचवलेले नाव:</p>
+                <p id="title-result-text" style="margin:0; font-size:20px; font-weight:bold; color:var(--primary-color); font-family:'Rozha One';"></p>
+                <button onclick="window.applyTitle()" style="margin-top:10px; padding:8px 18px; background:#28a745; color:white; border:none; border-radius:6px; cursor:pointer; font-family:'Mukta'; font-size:14px; font-weight:bold;">✅ हे नाव वापरा</button>
+            </div>
+        </div>
+
+        <!-- Tool 2: Image Generator -->
+        <div id="tool-image" style="display:none; padding:22px;">
+            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">कोणत्या विषयावर फोटो हवा आहे ते इंग्रजीत लिहा. AI एक unique फोटो बनवेल जो तुम्ही paper मध्ये insert करू शकता.</p>
+            <label style="font-size:13px; font-weight:bold; color:#333;">फोटो कशाचा बनवायचा? (English मध्ये लिहा):</label>
+            <textarea id="image-ai-prompt" rows="3" placeholder="e.g. Two muscular Indian wrestlers competing in a traditional mud akhara, dramatic lighting, watercolor style..." style="width:100%; margin-top:6px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:14px; resize:none; box-sizing:border-box;"></textarea>
+
+            <button onclick="window.generateAIImage()" id="image-gen-btn" style="width:100%; margin-top:14px; padding:13px; background:#1a237e; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; font-family:'Mukta';">🖼️ फोटो बनवा (Free)</button>
+            
+            <div id="image-loading" style="display:none; text-align:center; padding:20px; color:#666;">
+                <div style="font-size:24px; animation: spin 1s linear infinite; display:inline-block;">⏳</div>
+                <p style="margin:8px 0 0 0;">फोटो तयार होत आहे... (30-40 सेकंद)</p>
+            </div>
+
+            <div id="image-result" style="display:none; margin-top:14px;">
+                <p style="margin:0 0 8px 0; font-size:13px; color:#555;">तयार झालेला फोटो:</p>
+                <img id="ai-generated-image" src="" alt="AI Image" style="width:100%; border-radius:8px; border:2px solid #ddd;">
+                <button onclick="window.insertAIImage()" style="width:100%; margin-top:10px; padding:12px; background:#28a745; color:white; border:none; border-radius:8px; cursor:pointer; font-family:'Mukta'; font-size:15px; font-weight:bold;">📰 हा फोटो Paper मध्ये घाला</button>
+            </div>
         </div>
     </div>
     
-    <div id="ai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:999; backdrop-filter: blur(2px);" onclick="window.toggleAIModal()"></div>
+    <div id="ai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:999; backdrop-filter: blur(3px);" onclick="window.toggleAIModal()"></div>
     
     <!-- Script -->
     <script src="script.js"></script>
