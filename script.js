@@ -332,67 +332,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    window.generateTitleCalligraphy = function() {
+    window.generateTitleCalligraphy = async function() {
         const titleName = document.getElementById('title-name-input').value.trim();
         const styleHint = document.getElementById('title-style-input').value.trim();
         if (!titleName) return alert('वृत्तपत्राचे नाव लिहा!');
 
+        // Auto load Gemini API key from storage
+        const apiKey = localStorage.getItem('gemini-api-key');
+        if (!apiKey) {
+            return alert('प्रथम Gemini API Key सेव्ह करा!\n\u201cफोटो बनवा” tab मध्ये जाउन API Key टाका.\naistudio.google.com वरून मोफत key मिळवा.');
+        }
+
         document.getElementById('title-calligraphy-btn').style.display = 'none';
         document.getElementById('title-calligraphy-loading').style.display = 'block';
         document.getElementById('title-calligraphy-result').style.display = 'none';
+        document.getElementById('title-calligraphy-loading').innerText = '⏳ Gemini ने Image तयार करत आहे...';
 
-        // Build a reliable English-only prompt for Pollinations.ai
-        // (AI models cannot render Devanagari script — we describe style instead)
-        const userStyle = styleHint || 'ornate Indian traditional art style';
-        const fullPrompt = [
-            'artistic newspaper masthead banner',
-            'decorative Indian calligraphy artwork',
-            'wrestlers and gada mace traditional motifs',
-            'dark crimson red and gold color scheme',
-            'white clean background',
-            'ultra high detail',
-            userStyle,
-        ].join(', ');
+        // Build a vivid English-language prompt for Indian newspaper masthead
+        const baseStyle = styleHint && styleHint.trim().length > 5
+            ? styleHint
+            : 'ornate traditional Indian art, wrestling and gada mace motifs';
 
-        const encoded = encodeURIComponent(fullPrompt);
-        // Use a more reliable Pollinations endpoint with standard dimensions
-        const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?model=flux&width=1024&height=320&nologo=true&seed=${Math.floor(Math.random() * 99999)}`;
+        const prompt = `An artistic newspaper masthead banner illustration. Style: ${baseStyle}. Colors: dark crimson red and gold on white background. Include decorative borders and ornate patterns. Horizontal banner format. Professional newspaper masthead art. High quality illustration.`;
 
-        const img = document.getElementById('title-calligraphy-preview');
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+                })
+            });
 
-        // Set a timeout — if image doesn't load in 60s, show error
-        let timer = setTimeout(() => {
-            img.src = '';
-            document.getElementById('title-calligraphy-loading').style.display = 'none';
-            document.getElementById('title-calligraphy-btn').style.display = 'block';
-            alert('फोटो बनण्यास वेळ लागत आहे. थोडे थांबून पुन्हा प्रयत्न करा.');
-        }, 60000);
+            const data = await res.json();
 
-        img.onload = function() {
-            clearTimeout(timer);
+            if (data.error) throw new Error(data.error.message);
+
+            const parts = data.candidates?.[0]?.content?.parts || [];
+            const imgPart = parts.find(p => p.inlineData);
+
+            if (!imgPart) throw new Error('Gemini ने Image दिली नाही. prompt बदलून पुन्हा प्रयत्न करा.');
+
+            const imgSrc = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
+            const preview = document.getElementById('title-calligraphy-preview');
+            preview.src = imgSrc;
+
             document.getElementById('title-calligraphy-loading').style.display = 'none';
             document.getElementById('title-calligraphy-result').style.display = 'block';
             document.getElementById('title-calligraphy-btn').style.display = 'block';
-        };
-        img.onerror = function() {
-            clearTimeout(timer);
+
+        } catch (err) {
             document.getElementById('title-calligraphy-loading').style.display = 'none';
             document.getElementById('title-calligraphy-btn').style.display = 'block';
-            // Try alternative URL format without model param
-            const fallbackUrl = `https://image.pollinations.ai/prompt/${encoded}?width=900&height=300&nologo=true`;
-            const testImg = new Image();
-            testImg.crossOrigin = 'anonymous';
-            testImg.onload = function() {
-                img.src = fallbackUrl;
-                document.getElementById('title-calligraphy-result').style.display = 'block';
-            };
-            testImg.onerror = function() {
-                alert('Pollinations.ai सेवा सध्या उपलब्ध नाही. थोड्या वेळाने पुन्हा प्रयत्न करा.');
-            };
-            testImg.src = fallbackUrl;
-        };
-        img.crossOrigin = 'anonymous';
-        img.src = imageUrl;
+            document.getElementById('title-calligraphy-loading').innerText = '⏳ कॅलिग्राफी Image तयार होत आहे...';
+            alert('Image तयार करता आली नाही: ' + err.message);
+        }
     };
 
     window.applyTitleImage = function() {
@@ -446,30 +441,49 @@ document.addEventListener('DOMContentLoaded', () => {
     window.generateTitle = window.generateTitleCalligraphy;
     window.applyTitle = window.applyTitleText;
 
-    window.generateAIImage = function() {
+    window.generateAIImage = async function() {
         const prompt = document.getElementById('image-ai-prompt').value.trim();
-        if (!prompt) return alert('फोटोचे वर्णन English मध्ये लिहा!');
+        if (!prompt) return alert('फोटोचे वर्णन लिहा!');
+
+        const apiKey = localStorage.getItem('gemini-api-key');
+        if (!apiKey) {
+            return alert('Gemini API Key आवश्यक आहे!\nखाली API Key box मध्ये Key टाका.');
+        }
 
         document.getElementById('image-gen-btn').style.display = 'none';
         document.getElementById('image-loading').style.display = 'block';
         document.getElementById('image-result').style.display = 'none';
+        document.getElementById('image-loading').innerHTML = '<p style="text-align:center; margin:10px;">⏳ Gemini Image तयार करत आहे...</p>';
 
-        // Use Pollinations.ai (Free, no API key needed)
-        const encoded = encodeURIComponent(prompt + ', high quality, newspaper photo style, realistic');
-        const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=800&height=600&nologo=true&seed=${Date.now()}`;
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt + ', high quality, realistic, newspaper photo style' }] }],
+                    generationConfig: { responseModalities: ['IMAGE', 'TEXT'] }
+                })
+            });
 
-        const img = document.getElementById('ai-generated-image');
-        img.onload = function() {
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message);
+
+            const parts = data.candidates?.[0]?.content?.parts || [];
+            const imgPart = parts.find(p => p.inlineData);
+            if (!imgPart) throw new Error('Image मिळाली नाही. Prompt बदलून पुन्हा प्रयत्न करा.');
+
+            const imgSrc = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
+            document.getElementById('ai-generated-image').src = imgSrc;
+
             document.getElementById('image-loading').style.display = 'none';
             document.getElementById('image-result').style.display = 'block';
             document.getElementById('image-gen-btn').style.display = 'block';
-        };
-        img.onerror = function() {
+
+        } catch (err) {
             document.getElementById('image-loading').style.display = 'none';
             document.getElementById('image-gen-btn').style.display = 'block';
-            alert('फोटो बनवण्यात अडचण आली. पुन्हा प्रयत्न करा.');
-        };
-        img.src = imageUrl;
+            alert('Image तयार करता आली नाही: ' + err.message);
+        }
     };
 
     window.insertAIImage = function() {

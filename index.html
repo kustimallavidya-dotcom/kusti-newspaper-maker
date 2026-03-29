@@ -222,11 +222,17 @@
 
         <!-- Tool 2: Image Generator -->
         <div id="tool-image" style="display:none; padding:22px;">
-            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">कोणत्या विषयावर फोटो हवा आहे ते इंग्रजीत लिहा. AI एक unique फोटो बनवेल जो तुम्ही paper मध्ये insert करू शकता.</p>
-            <label style="font-size:13px; font-weight:bold; color:#333;">फोटो कशाचा बनवायचा? (English मध्ये लिहा):</label>
-            <textarea id="image-ai-prompt" rows="3" placeholder="e.g. Two muscular Indian wrestlers competing in a traditional mud akhara, dramatic lighting, watercolor style..." style="width:100%; margin-top:6px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:14px; resize:none; box-sizing:border-box;"></textarea>
+            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">कोणत्या विषयावर फोटो हवा ते <strong>Marathi किंवा English</strong> मध्ये सांगा. Gemini AI एक unique फोटो बनवेल.</p>
+            <label style="font-size:13px; font-weight:bold; color:#333;">फोटो कशाचा बनवायचा?</label>
+            <textarea id="image-ai-prompt" rows="3" placeholder="उदा. दोन मल्ल आखाड्यात कुस्ती खेळत आहेत, नाट्यमय प्रकाश / Two wrestlers in mud akhara, dramatic lighting..." style="width:100%; margin-top:6px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:14px; resize:none; box-sizing:border-box;"></textarea>
 
-            <button onclick="window.generateAIImage()" id="image-gen-btn" style="width:100%; margin-top:14px; padding:13px; background:#1a237e; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; font-family:'Mukta';">🖼️ फोटो बनवा (Free)</button>
+            <label style="font-size:12px; font-weight:bold; color:#777; margin-top:12px; display:block;">Gemini API Key:</label>
+            <div style="display:flex; gap:8px; margin-top:4px; margin-bottom:14px;">
+                <input type="password" id="image-tab-api-key" placeholder="Paste API Key (एकदाच टाका, सेव्ह होईल)..." style="flex:1; padding:8px; border:1px solid #ddd; border-radius:6px; font-family:monospace; font-size:12px;" oninput="localStorage.setItem('gemini-api-key', this.value)">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="align-self:center; font-size:11px; color:#0066cc; text-decoration:none; white-space:nowrap;">मोफत Key</a>
+            </div>
+
+            <button onclick="window.generateAIImage()" id="image-gen-btn" style="width:100%; padding:13px; background:#1a237e; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; font-family:'Mukta';">🖼️ Gemini ने फोटो बनवा</button>
             
             <div id="image-loading" style="display:none; text-align:center; padding:20px; color:#666;">
                 <div style="font-size:24px; animation: spin 1s linear infinite; display:inline-block;">⏳</div>
