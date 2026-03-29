@@ -26,9 +26,12 @@
     <div class="app-container">
         <!-- Dashboard / Controls Area -->
         <aside class="dashboard" id="no-print">
-            <div class="dashboard-header">
-                <h2>नियंत्रण पॅनेल</h2>
-                <p>Newspaper Canvas Editor (3:4 Size)</p>
+            <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 2px solid #eee; margin-bottom: 20px;">
+                <div>
+                    <h2 style="margin:0; color:var(--primary-color); font-family:'Tiro Devanagari Marathi';">नियंत्रण पॅनेल</h2>
+                    <p style="margin:0; color:#555; font-size:13px;">Editor & Settings</p>
+                </div>
+                <button title="✨ AI ने बातमी तयार करा" onclick="toggleAIModal()" style="background:var(--primary-color); border:none; color:white; border-radius:30px; padding: 8px 15px; font-weight: bold; cursor:pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">✨ AI एआय</button>
             </div>
             
             <div class="control-group">
@@ -37,9 +40,19 @@
                 <small style="color:#666; font-size:12px;">* लोगो एकदाच अपलोड करा, तो सेव्ह राहील.</small>
             </div>
 
+            <div class="control-group" style="background: #fff3e0; padding: 15px; border-radius: 8px; border: 1px solid #ffcc80;">
+                <label style="color: #d84315;">वृत्तपत्राची माहिती (Newspaper Details)</label>
+                
+                <label for="newspaper-title-input" style="font-size: 13px; margin-top: 5px;">मुख्य नाव (Main Title):</label>
+                <input type="text" id="newspaper-title-input" value="कुस्ती मल्लविद्या" style="width:100%; padding:8px; margin-bottom:10px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta'; font-weight: bold;">
+                
+                <label for="newspaper-slogan-input" style="font-size: 13px;">स्लोगन / ब्रीदवाक्य:</label>
+                <input type="text" id="newspaper-slogan-input" value='"गे मायभु तुझे मी फेडीन पांग सारे..."' style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta'; font-size: 12px;">
+            </div>
+
             <div class="control-group">
                 <label for="manual-date">दिनांक आणि पंचांग (Date/Panchang):</label>
-                <input type="text" id="manual-date" placeholder="उदा. ज्येष्ठ कृष्ण नवमी, वसंत ऋतू | २१ मे २०२६" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
+                <input type="text" id="manual-date" placeholder="उदा. ज्येष्ठ कृष्ण नवमी | २१ मे २०२६" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta';">
             </div>
 
             <div class="control-group">
@@ -105,9 +118,9 @@
                             <span id="logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
                         </div>
                         <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center;">
-                            <h1 class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 85px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
+                            <h1 id="newspaper-title-display" class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 85px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
                             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 5px;">
-                                <h3 class="newspaper-slogan" style="font-size: 20px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे, आणिन आरतीला हे चंद्र,सुर्य, तारे"</h3>
+                                <h3 id="newspaper-slogan-display" class="newspaper-slogan" style="font-size: 20px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
                                 <div class="establishment" style="font-size: 16px; font-weight: bold; color: #444; font-family: 'Mukta'; margin-left: 10px;">स्थापना २००९</div>
                             </div>
                         </div>
@@ -161,6 +174,38 @@
             </div>
         </main>
     </div>
+    
+    <!-- AI Modal HTML -->
+    <div id="ai-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; padding:25px; border-radius:10px; box-shadow:0 10px 40px rgba(0,0,0,0.3); z-index:1000; width:90%; max-width:480px; font-family: 'Mukta';">
+        <h3 style="margin-top:0; color:var(--primary-color); font-family:'Tiro Devanagari Marathi'; display: flex; align-items: center; gap: 8px;">
+            ✨ एआय बातमी जनरेटर (Gemini Magic)
+        </h3>
+        <p style="font-size:14px; color:#555; margin-bottom:15px; line-height: 1.4;">एक विषय किंवा बातमीचा गोषवारा लिहा आणि आम्ही तुमच्यासाठी पूर्ण व्यावसायिक लेख, शीर्षक किंवा नाव तयार करू!</p>
+        
+        <label style="font-size:14px; font-weight:bold; color: #333;">काय तयार करायचे आहे? (Target Field):</label>
+        <select id="ai-target-section" style="width:100%; padding:10px; margin-bottom:15px; margin-top:5px; border:1px solid #ccc; border-radius:4px; font-family: 'Mukta'; font-size: 15px; background: #fafafa;">
+            <option value="article-input">📰 मुख्य लेख पूर्ण करा (Article Content)</option>
+            <option value="headline-input">📣 बातमीचे शीर्षक (Catchy Headline)</option>
+            <option value="newspaper-title-input">🏛️ वृत्तपत्राचे नाव बदला (Newspaper Title)</option>
+            <option value="newspaper-slogan-input">🖋️ ब्रीदवाक्य / स्लोगन (Newspaper Slogan)</option>
+        </select>
+        
+        <label style="font-size:14px; font-weight:bold; color: #333;">प्राँप्ट (काय लिहायचे आहे?):</label>
+        <textarea id="ai-prompt" rows="5" placeholder="उदा. 'सिकंदर शेखने पंजाब कुस्ती स्पर्धेत मिळवलेल्या मोठ्या विजयावर एक सविस्तर आणि रोमहर्षक बातमी ५०० शब्दांत लिहा...'" style="width:100%; padding:10px; margin-bottom:15px; margin-top:5px; border:1px solid #ccc; border-radius:4px; font-family:'Mukta'; font-size: 14px; resize: none;"></textarea>
+
+        <label style="font-size:12px; font-weight:bold; color: #777;">Gemini API Key (तुमची स्वतःची API की):</label>
+        <div style="display: flex; gap: 10px; margin-top: 5px; margin-bottom: 25px;">
+            <input type="password" id="gemini-api-key" placeholder="Paste Gemini API Key..." style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family: monospace;">
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size: 11px; align-self: center; color: #0066cc; text-decoration: none; white-space: nowrap;">Get Free Key</a>
+        </div>
+        
+        <div style="display:flex; gap:10px;">
+            <button onclick="window.generateAIContent()" id="ai-generate-btn" style="flex:2; background:#000; color:white; border:none; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;">✨ जनरेट करा</button>
+            <button onclick="window.toggleAIModal()" style="flex:1; background:#efefef; color:#333; border:1px solid #ccc; padding:12px; border-radius:6px; font-weight:bold; cursor:pointer; font-size: 15px;">बंद करा</button>
+        </div>
+    </div>
+    
+    <div id="ai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:999; backdrop-filter: blur(2px);" onclick="window.toggleAIModal()"></div>
     
     <!-- Script -->
     <script src="script.js"></script>

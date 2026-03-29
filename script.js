@@ -258,12 +258,108 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial default placeholder state
     articleInput.value = "येथे आपला लेख किंवा मुलाखत पेस्ट करा...\n\nही एक प्रात्यक्षिक ओळ आहे. मल्लविद्या चळवळीचा प्रसार करण्यासाठी हा एक चांगला उपक्रम आहे.\n\nतुम्ही २००० शब्दांपर्यंत इथे मोठे लेख टाकू शकता. शब्द वाढले की कॉलमची संख्या आणि अक्षरांचा आकार आपोआप योग्य रितीने ऍडजस्ट होतो!";
     
-    // Initial Render
+    const newspaperTitleInput = document.getElementById('newspaper-title-input');
+    const newspaperSloganInput = document.getElementById('newspaper-slogan-input');
+    const newspaperTitleDisplay = document.getElementById('newspaper-title-display');
+    const newspaperSloganDisplay = document.getElementById('newspaper-slogan-display');
+
+    const updateNewspaperTitle = () => {
+        newspaperTitleDisplay.innerText = newspaperTitleInput.value.trim() || "कुस्ती मल्लविद्या";
+    };
+
+    const updateNewspaperSlogan = () => {
+        newspaperSloganDisplay.innerText = newspaperSloganInput.value.trim() || '"गे मायभु तुझे मी फेडीन पांग सारे..."';
+    };
+
+    newspaperTitleInput.addEventListener('input', updateNewspaperTitle);
+    newspaperSloganInput.addEventListener('input', updateNewspaperSlogan);
+
+    // Initializations
     updatePreview();
     updateAuthorPreview();
+    updateNewspaperTitle();
+    updateNewspaperSlogan();
 
     // ---------------------------------
-    // 6. HD Canvas Download Export (PNG)
+    // 6. Gemini AI Assistant (New Feature)
+    // ---------------------------------
+    window.toggleAIModal = function() {
+        const modal = document.getElementById('ai-modal');
+        const overlay = document.getElementById('ai-overlay');
+        const aiApiKeyInput = document.getElementById('gemini-api-key');
+        
+        // Auto load key if saved
+        if(localStorage.getItem('gemini-api-key') && !aiApiKeyInput.value) {
+            aiApiKeyInput.value = localStorage.getItem('gemini-api-key');
+        }
+
+        if(modal.style.display === 'none') {
+            modal.style.display = 'block';
+            overlay.style.display = 'block';
+        } else {
+            modal.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+    };
+
+    window.generateAIContent = async function() {
+        const apiKey = document.getElementById('gemini-api-key').value.trim();
+        const prompt = document.getElementById('ai-prompt').value.trim();
+        const targetElementId = document.getElementById('ai-target-section').value;
+        const generateBtn = document.getElementById('ai-generate-btn');
+
+        if(!apiKey) return alert("Gemini API Key भरणे अनिवार्य आहे!");
+        if(!prompt) return alert("तुमचा प्राँप्ट लिहिणे अनिवार्य आहे!");
+
+        // Save key for future
+        localStorage.setItem('gemini-api-key', apiKey);
+
+        generateBtn.innerText = "⏳ Generating...";
+        generateBtn.disabled = true;
+
+        try {
+            const systemInstructions = "MANDATORY: You are an expert Marathi newspaper editor. You must write in standard Marathi. DO NOT output ANY markdown formatting (no ```, no bolding, no asterisks, no headers). Output ONLY the final plain text requested by the user prompt. Write directly what should be pasted into the input field.";
+            const fullPrompt = `Task: ${prompt}\n\n${systemInstructions}`;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: fullPrompt }]}]
+                })
+            });
+
+            const data = await response.json();
+            
+            if(data.error) {
+                alert("Gemini Error: " + data.error.message);
+            } else {
+                const textResult = data.candidates[0].content.parts[0].text.trim();
+                const targetInput = document.getElementById(targetElementId);
+                
+                targetInput.value = textResult;
+                
+                // Immediately update preview
+                if(targetElementId === 'article-input' || targetElementId === 'headline-input') {
+                    updatePreview();
+                } else if(targetElementId === 'newspaper-title-input') {
+                    updateNewspaperTitle();
+                } else if(targetElementId === 'newspaper-slogan-input') {
+                    updateNewspaperSlogan();
+                }
+                
+                window.toggleAIModal();
+            }
+        } catch(err) {
+            alert("Network Error: " + err.message);
+        } finally {
+            generateBtn.innerHTML = "✨ जनरेट करा";
+            generateBtn.disabled = false;
+        }
+    };
+
+    // ---------------------------------
+    // 7. HD Canvas Download Export (PNG)
     // ---------------------------------
     downloadBtn.addEventListener('click', () => {
         const originalText = downloadBtn.innerText;
