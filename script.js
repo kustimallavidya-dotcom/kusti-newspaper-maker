@@ -341,22 +341,57 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('title-calligraphy-loading').style.display = 'block';
         document.getElementById('title-calligraphy-result').style.display = 'none';
 
-        // Build Pollinations.ai prompt for stunning calligraphy title
-        const fullPrompt = `"${titleName}" written in ${styleHint}, ultra high quality, 4K resolution, horizontal banner format, photorealistic`;
+        // Build a reliable English-only prompt for Pollinations.ai
+        // (AI models cannot render Devanagari script — we describe style instead)
+        const userStyle = styleHint || 'ornate Indian traditional art style';
+        const fullPrompt = [
+            'artistic newspaper masthead banner',
+            'decorative Indian calligraphy artwork',
+            'wrestlers and gada mace traditional motifs',
+            'dark crimson red and gold color scheme',
+            'white clean background',
+            'ultra high detail',
+            userStyle,
+        ].join(', ');
+
         const encoded = encodeURIComponent(fullPrompt);
-        const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?width=1080&height=200&nologo=true&seed=${Date.now()}`;
+        // Use a more reliable Pollinations endpoint with standard dimensions
+        const imageUrl = `https://image.pollinations.ai/prompt/${encoded}?model=flux&width=1024&height=320&nologo=true&seed=${Math.floor(Math.random() * 99999)}`;
 
         const img = document.getElementById('title-calligraphy-preview');
+
+        // Set a timeout — if image doesn't load in 60s, show error
+        let timer = setTimeout(() => {
+            img.src = '';
+            document.getElementById('title-calligraphy-loading').style.display = 'none';
+            document.getElementById('title-calligraphy-btn').style.display = 'block';
+            alert('फोटो बनण्यास वेळ लागत आहे. थोडे थांबून पुन्हा प्रयत्न करा.');
+        }, 60000);
+
         img.onload = function() {
+            clearTimeout(timer);
             document.getElementById('title-calligraphy-loading').style.display = 'none';
             document.getElementById('title-calligraphy-result').style.display = 'block';
             document.getElementById('title-calligraphy-btn').style.display = 'block';
         };
         img.onerror = function() {
+            clearTimeout(timer);
             document.getElementById('title-calligraphy-loading').style.display = 'none';
             document.getElementById('title-calligraphy-btn').style.display = 'block';
-            alert('Image बनवता आली नाही. इंटरनेट तपासा आणि पुन्हा प्रयत्न करा.');
+            // Try alternative URL format without model param
+            const fallbackUrl = `https://image.pollinations.ai/prompt/${encoded}?width=900&height=300&nologo=true`;
+            const testImg = new Image();
+            testImg.crossOrigin = 'anonymous';
+            testImg.onload = function() {
+                img.src = fallbackUrl;
+                document.getElementById('title-calligraphy-result').style.display = 'block';
+            };
+            testImg.onerror = function() {
+                alert('Pollinations.ai सेवा सध्या उपलब्ध नाही. थोड्या वेळाने पुन्हा प्रयत्न करा.');
+            };
+            testImg.src = fallbackUrl;
         };
+        img.crossOrigin = 'anonymous';
         img.src = imageUrl;
     };
 
