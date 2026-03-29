@@ -8,14 +8,9 @@
   "description": "एक प्रगत वेब ॲप जे तुमचे मोठे लेख एचडी न्यूजपेपर लेआउटमध्ये रूपांतरित करते.",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192/8b0000/ffffff?text=K",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://via.placeholder.com/512/8b0000/ffffff?text=K",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "./logo.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml"
     }
   ]
 }

@@ -1,11 +1,52 @@
-// PWA Registration
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
+// PWA Registration, Install Logic & Splash Screen
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.getElementById('install-app-btn');
+    if (installBtn) installBtn.style.display = 'block';
+});
+
+window.addEventListener('appinstalled', () => {
+    const installBtn = document.getElementById('install-app-btn');
+    if (installBtn) installBtn.style.display = 'none';
+    deferredPrompt = null;
+    console.log('PWA was installed');
+});
+
+window.addEventListener('load', () => {
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./service-worker.js')
             .then(reg => console.log('Service Worker registered successfully!', reg))
             .catch(err => console.error('Service Worker registration failed:', err));
-    });
-}
+    }
+
+    // Handle Install Button Click
+    const installBtn = document.getElementById('install-app-btn');
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+        });
+    }
+
+    // Splash Screen Dismissal
+    setTimeout(() => {
+        const splash = document.getElementById('splash-screen');
+        if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 600); // Wait for transition
+        }
+    }, 2000); // 2 Seconds display
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     // ---------------------------------
