@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Manual Date Input Setup
     // ---------------------------------
     const manualDateInput = document.getElementById('manual-date');
-    const currentDateDisplay = document.getElementById('current-date');
+    const currentDateDisplay = document.getElementById('top-right-date'); // Fix: updated ID
     const savedDate = localStorage.getItem('kusti-date') || '';
     manualDateInput.value = savedDate;
     currentDateDisplay.innerText = savedDate ? savedDate : 'येथे दिनांक दिसेल';
