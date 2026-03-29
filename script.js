@@ -91,29 +91,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const words = text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
         wordCountSpan.innerText = `शब्द: ${words}`;
         
+        // Define scaling rules specifically for ensuring up to 3000 words logic fit on the single layout
+        let effectiveWords = words;
+        if (articleImageSrc) {
+            effectiveWords += 400; // An image roughly takes up 400-words equivalent of vertical space
+        }
+
         let colCount = 2;
         let fontSize = "24px";
         let lineHeight = "1.8";
         let pMargin = "0.7em";
         let colGap = "45px";
 
-        if (words === 0) {
+        if (effectiveWords === 0) {
             colCount = 2; fontSize = "24px";
-        } else if (words <= 350) {
+        } else if (effectiveWords <= 350) {
             colCount = 2; fontSize = "21.5px"; lineHeight = "1.7"; pMargin = "0.7em"; colGap = "45px";
-        } else if (words <= 700) {
+        } else if (effectiveWords <= 700) {
             colCount = 3; fontSize = "17px"; lineHeight = "1.55"; pMargin = "0.55em"; colGap = "40px";
-        } else if (words <= 1100) {
-            colCount = 4; fontSize = "14.5px"; lineHeight = "1.45"; pMargin = "0.5em"; colGap = "35px";
-        } else if (words <= 1500) {
-            colCount = 4; fontSize = "13px"; lineHeight = "1.4"; pMargin = "0.45em"; colGap = "30px";
-        } else if (words <= 1800) {
-            colCount = 5; fontSize = "11.5px"; lineHeight = "1.35"; pMargin = "0.4em"; colGap = "25px";
-        } else if (words <= 2200) {
-            colCount = 6; fontSize = "10.5px"; lineHeight = "1.3"; pMargin = "0.3em"; colGap = "20px";
+        } else if (effectiveWords <= 1100) {
+            colCount = 4; fontSize = "14.5px"; lineHeight = "1.45"; pMargin = "0.45em"; colGap = "35px";
+        } else if (effectiveWords <= 1500) {
+            colCount = 4; fontSize = "12.5px"; lineHeight = "1.35"; pMargin = "0.4em"; colGap = "30px";
+        } else if (effectiveWords <= 1900) {
+            colCount = 5; fontSize = "11px"; lineHeight = "1.3"; pMargin = "0.35em"; colGap = "25px";
+        } else if (effectiveWords <= 2400) {
+            colCount = 6; fontSize = "9.5px"; lineHeight = "1.25"; pMargin = "0.25em"; colGap = "20px";
         } else {
             // max threshold fallback for massive texts
-            colCount = 6; fontSize = "9.5px"; lineHeight = "1.25"; pMargin = "0.25em"; colGap = "20px";
+            colCount = 6; fontSize = "9px"; lineHeight = "1.2"; pMargin = "0.2em"; colGap = "20px";
         }
 
         // Apply dynamic styles to canvas content wrapper
