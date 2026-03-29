@@ -210,20 +210,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
         articleContentContainer.innerHTML = htmlContent;
 
-        // 1. Logic for font size and column count based on content length
-        // Since canvas now expands vertically, we don't need binary search.
-        let colCount = 4;
-        let finalF = 18;
-        
-        if (effectiveWords <= 250) { colCount = 2; finalF = 26; }
-        else if (effectiveWords <= 450) { colCount = 2; finalF = 22; }
-        else if (effectiveWords <= 800) { colCount = 3; finalF = 20; }
-        else if (effectiveWords <= 1200) { colCount = 3; finalF = 18; }
-        else if (effectiveWords <= 1800) { colCount = 4; finalF = 17; }
-        else { colCount = 5; finalF = 16; } // Keeps expanding height naturally
+        // 1. Initial colCount guess based on word density (large limits)
+        let colCount = 5;
+        if (effectiveWords <= 150) colCount = 1;
+        else if (effectiveWords <= 400) colCount = 2;
+        else if (effectiveWords <= 800) colCount = 3;
+        else if (effectiveWords <= 1500) colCount = 4;
 
-        articleContentContainer.style.setProperty('--dynamic-col-count', colCount);
-        articleContentContainer.style.setProperty('--dynamic-font-size', finalF + "px");
+        // 2. Binary search Font logic with live scrollWidth
+        const findOptimalFont = (count) => {
+            articleContentContainer.style.setProperty('--dynamic-col-count', count);
+            let minF = 4, maxF = 120, bestF = 4; // allow massive sizes to prevent empty gaps
+            
+            for (let i = 0; i < 25; i++) {
+                let mid = (minF + maxF) / 2;
+                articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
+                const h = articleContentContainer.offsetHeight; // Force reflow
+                
+                // If it spills into a new un-viewable column horizontally
+                if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 5) {
+                    maxF = mid;
+                } else {
+                    bestF = mid;
+                    minF = mid;
+                }
+            }
+            return bestF;
+        };
+
+        let finalF = findOptimalFont(colCount);
+        
+        // 3. Gap Filling Strategy: Iteratively reduce colCount if font is getting too massive (or if it looks weird).
+        // If finalF is somewhat big, we just let it be big to fill the gap!
+        // But if we're at 4 columns and font is 35px... it might look better as 2 columns at 45px.
+        while (finalF > 28 && colCount > 1) {
+            colCount--;
+            finalF = findOptimalFont(colCount);
+        }
+        
+        // Final polish to avoid clipping the very bottom due to line-heights
+        articleContentContainer.style.setProperty('--dynamic-font-size', (finalF - 0.4) + "px");
 
         applyAllColors();
     };

@@ -126,13 +126,13 @@ body {
 ----------------------------- */
 #newspaper-canvas {
     width: var(--canvas-width);
-    min-height: var(--canvas-height); /* Allow vertical growth for long texts */
-    height: auto;
+    height: var(--canvas-height); /* Strictly fixed Height 1440px (3:4 ratio) */
     background: #fff;
     padding: 60px 70px; /* Proper newspaper margins */
     box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     box-sizing: border-box;
     position: relative;
+    overflow: hidden; /* Avoid overflow text breaking layout entirely */
     display: flex;
     flex-direction: column;
 }
@@ -242,8 +242,7 @@ body {
 
 .newspaper-content {
     flex: 1;
-    overflow: visible; /* Allows height to grow naturally */
-    min-height: 500px;
+    overflow: hidden; /* prevents overlap or pushing height beyond 1440px */
 }
 
 /* --------- Main Content (Columns) --------- */
