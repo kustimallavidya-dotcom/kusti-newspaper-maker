@@ -328,8 +328,16 @@ document.addEventListener('DOMContentLoaded', () => {
         generateBtn.disabled = true;
 
         try {
-            const systemInstructions = "MANDATORY: You are an expert Marathi newspaper editor. You must write in standard Marathi. DO NOT output ANY markdown formatting (no ```, no bolding, no asterisks, no headers). Output ONLY the final plain text requested by the user prompt. Write directly what should be pasted into the input field.";
-            const fullPrompt = `Task: ${prompt}\n\n${systemInstructions}`;
+            // Target-specific system instructions for clean output
+            const systemInstructions = {
+                'article-input': `You are an expert Marathi newspaper journalist. Write ONLY the article body text in fluent Marathi. No headings, no asterisks, no markdown. Write each paragraph on a new line. Do not include title or byline.`,
+                'headline-input': `You are a Marathi newspaper headline writer. Output ONLY a single short punchy headline in Marathi. Maximum 10 words. No quotation marks, no punctuation at end, no explanation.`,
+                'newspaper-title-input': `Output ONLY the newspaper name in Marathi. Maximum 3-4 words. Just the name itself, nothing else. Example output: कुस्ती मल्लविद्या`,
+                'newspaper-slogan-input': `Output ONLY a single short inspiring slogan/tagline in Marathi. Maximum 12 words. Just the slogan text, no quotes, no explanation.`
+            };
+
+            const selectedInstruction = systemInstructions[targetElementId] || systemInstructions['article-input'];
+            const fullPrompt = `${selectedInstruction}\n\nUser request: ${prompt}`;
 
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
