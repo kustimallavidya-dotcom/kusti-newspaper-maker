@@ -31,7 +31,6 @@
                     <h2 style="margin:0; color:var(--primary-color); font-family:'Tiro Devanagari Marathi';">नियंत्रण पॅनेल</h2>
                     <p style="margin:0; color:#555; font-size:13px;">Editor & Settings</p>
                 </div>
-                <button title="✨ AI ने बातमी तयार करा" onclick="toggleAIModal()" style="background:var(--primary-color); border:none; color:white; border-radius:30px; padding: 8px 15px; font-weight: bold; cursor:pointer; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">✨ AI एआय</button>
             </div>
             
             <div class="control-group">
@@ -152,8 +151,6 @@
                         <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center;">
                             <!-- Text Title (default) -->
                             <h1 id="newspaper-title-display" class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 85px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
-                            <!-- AI Calligraphy Image Title (hidden by default) -->
-                            <img id="title-image-display" src="" alt="Title" style="display:none; max-height: 110px; width: auto; max-width: 100%; object-fit: contain;">
                             <div style="display: flex; justify-content: flex-start; align-items: flex-end; margin-top: 5px;">
                                 <h3 id="newspaper-slogan-display" class="newspaper-slogan" style="font-size: 20px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
                             </div>
@@ -209,76 +206,6 @@
         </main>
     </div>
     
-    <!-- AI Modal HTML - Simplified 2-Tool Version -->
-    <div id="ai-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:white; border-radius:14px; box-shadow:0 20px 60px rgba(0,0,0,0.35); z-index:1000; width:92%; max-width:500px; font-family: 'Mukta'; overflow:hidden;">
-        
-        <!-- Modal Header -->
-        <div style="background: var(--primary-color); padding: 18px 22px; display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin:0; color:white; font-family:'Tiro Devanagari Marathi'; font-size: 20px;">✨ AI साधने</h3>
-            <button onclick="window.toggleAIModal()" style="background:rgba(255,255,255,0.2); border:none; color:white; border-radius:50%; width:32px; height:32px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center;">×</button>
-        </div>
-
-        <!-- Tool Tabs -->
-        <div style="display:flex; border-bottom: 2px solid #eee;">
-            <button id="tab-title" onclick="window.switchAITab('title')" style="flex:1; padding:12px; background:#f9f9f9; border:none; font-family:'Mukta'; font-size:15px; font-weight:bold; cursor:pointer; color:var(--primary-color); border-bottom: 3px solid var(--primary-color);">✨ Title सुधारा</button>
-            <button id="tab-image" onclick="window.switchAITab('image')" style="flex:1; padding:12px; background:white; border:none; font-family:'Mukta'; font-size:15px; font-weight:bold; cursor:pointer; color:#888; border-bottom: 3px solid transparent;">🖼️ फोटो बनवा</button>
-        </div>
-
-        <!-- Tool 1: Title AI -->
-        <div id="tool-title" style="padding:22px;">
-            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">वृत्तपत्राचे नाव लिहा. AI त्याची <strong>सुंदर कॅलिग्राफी Image</strong> तयार करेल जी थेट paper मध्ये जाईल!</p>
-            
-            <label style="font-size:13px; font-weight:bold; color:#333;">वृत्तपत्राचे नाव (Marathi मध्ये):</label>
-            <input type="text" id="title-name-input" value="कुस्ती मल्लविद्या" style="width:100%; margin-top:6px; padding:10px; border:2px solid var(--primary-color); border-radius:6px; font-family:'Rozha One'; font-size:22px; box-sizing:border-box; color:var(--primary-color);">
-
-            <label style="font-size:13px; font-weight:bold; color:#333; margin-top:12px; display:block;">Style वर्णन (Marathi / English — कोणतेही चालेल):</label>
-            <input type="text" id="title-style-input" value="ornate Indian calligraphy, wrestling motifs like wrestlers and mace, dark red and gold, white background, newspaper masthead" placeholder="उदा. राजेशाही, सोनेरी रंग, मल्लांचे चित्र / elegant royal gold style with wrestlers" style="width:100%; margin-top:6px; padding:8px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:13px; box-sizing:border-box;">
-
-            <div style="display:flex; gap:10px; margin-top:16px;">
-                <button onclick="window.generateTitleCalligraphy()" id="title-calligraphy-btn" style="flex:2; padding:13px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-size:15px; font-weight:bold; cursor:pointer; font-family:'Mukta';">🎨 Calligraphy Image बनवा</button>
-                <button onclick="window.applyTitleText()" style="flex:1; padding:13px; background:#555; color:white; border:none; border-radius:8px; font-size:13px; font-weight:bold; cursor:pointer; font-family:'Mukta';">Aa Text</button>
-            </div>
-
-            <div id="title-calligraphy-loading" style="display:none; text-align:center; padding:18px; color:#666;">
-                ⏳ कॅलिग्राफी Image तयार होत आहे...
-            </div>
-
-            <div id="title-calligraphy-result" style="display:none; margin-top:14px;">
-                <p style="margin:0 0 6px 0; font-size:12px; color:#666; font-weight:bold;">तयार झालेली Image:</p>
-                <img id="title-calligraphy-preview" src="" alt="Title Calligraphy" style="width:100%; border-radius:8px; border:2px solid #ddd; background:#f5f5f5;">
-                <button onclick="window.applyTitleImage()" style="width:100%; margin-top:10px; padding:12px; background:#28a745; color:white; border:none; border-radius:8px; cursor:pointer; font-family:'Mukta'; font-size:15px; font-weight:bold;">📰 हे Paper मध्ये घाला</button>
-                <button onclick="document.getElementById('title-calligraphy-result').style.display='none'; document.getElementById('title-calligraphy-btn').style.display='block';" style="width:100%; margin-top:6px; padding:8px; background:#eee; color:#333; border:none; border-radius:6px; cursor:pointer; font-family:'Mukta'; font-size:13px;">↩️ पुन्हा बनवा</button>
-            </div>
-        </div>
-
-        <!-- Tool 2: Image Generator -->
-        <div id="tool-image" style="display:none; padding:22px;">
-            <p style="margin:0 0 12px 0; font-size:14px; color:#555; line-height:1.5;">कोणत्या विषयावर फोटो हवा ते <strong>Marathi किंवा English</strong> मध्ये सांगा. Gemini AI एक unique फोटो बनवेल.</p>
-            <label style="font-size:13px; font-weight:bold; color:#333;">फोटो कशाचा बनवायचा?</label>
-            <textarea id="image-ai-prompt" rows="3" placeholder="उदा. दोन मल्ल आखाड्यात कुस्ती खेळत आहेत, नाट्यमय प्रकाश / Two wrestlers in mud akhara, dramatic lighting..." style="width:100%; margin-top:6px; padding:10px; border:1px solid #ddd; border-radius:6px; font-family:'Mukta'; font-size:14px; resize:none; box-sizing:border-box;"></textarea>
-
-            <label style="font-size:12px; font-weight:bold; color:#777; margin-top:12px; display:block;">Gemini API Key:</label>
-            <div style="display:flex; gap:8px; margin-top:4px; margin-bottom:14px;">
-                <input type="password" id="image-tab-api-key" placeholder="Paste API Key (एकदाच टाका, सेव्ह होईल)..." style="flex:1; padding:8px; border:1px solid #ddd; border-radius:6px; font-family:monospace; font-size:12px;" oninput="localStorage.setItem('gemini-api-key', this.value)">
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="align-self:center; font-size:11px; color:#0066cc; text-decoration:none; white-space:nowrap;">मोफत Key</a>
-            </div>
-
-            <button onclick="window.generateAIImage()" id="image-gen-btn" style="width:100%; padding:13px; background:#1a237e; color:white; border:none; border-radius:8px; font-size:16px; font-weight:bold; cursor:pointer; font-family:'Mukta';">🖼️ Gemini ने फोटो बनवा</button>
-            
-            <div id="image-loading" style="display:none; text-align:center; padding:20px; color:#666;">
-                <div style="font-size:24px; animation: spin 1s linear infinite; display:inline-block;">⏳</div>
-                <p style="margin:8px 0 0 0;">फोटो तयार होत आहे... (30-40 सेकंद)</p>
-            </div>
-
-            <div id="image-result" style="display:none; margin-top:14px;">
-                <p style="margin:0 0 8px 0; font-size:13px; color:#555;">तयार झालेला फोटो:</p>
-                <img id="ai-generated-image" src="" alt="AI Image" style="width:100%; border-radius:8px; border:2px solid #ddd;">
-                <button onclick="window.insertAIImage()" style="width:100%; margin-top:10px; padding:12px; background:#28a745; color:white; border:none; border-radius:8px; cursor:pointer; font-family:'Mukta'; font-size:15px; font-weight:bold;">📰 हा फोटो Paper मध्ये घाला</button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="ai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:999; backdrop-filter: blur(3px);" onclick="window.toggleAIModal()"></div>
     
     <!-- Script -->
     <script src="script.js"></script>
