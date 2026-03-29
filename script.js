@@ -158,24 +158,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // More precise Binary search for optimal font size
         let bestF = minF;
-        articleContentContainer.style.height = '100%';
-        
-        // Use 20 iterations for sub-pixel precision
-        for (let i = 0; i < 20; i++) {
+        const availableHeight = articleContentContainer.clientHeight;
+        const colWidth = (articleContentContainer.clientWidth - (50 * (colCount - 1))) / colCount;
+
+        // Create a hidden measurer to check vertical requirements
+        const measurer = document.createElement('div');
+        measurer.style.position = 'absolute';
+        measurer.style.visibility = 'hidden';
+        measurer.style.width = colWidth + 'px';
+        measurer.style.lineHeight = '1.7';
+        measurer.style.textAlign = 'justify';
+        measurer.innerHTML = htmlContent;
+        document.body.appendChild(measurer);
+
+        for (let i = 0; i < 18; i++) {
             let mid = (minF + maxF) / 2;
-            articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
+            measurer.style.fontSize = mid + 'px';
             
-            // Check if content overflows horizontally (pushed into next hidden column)
-            if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 3) {
+            // If total height of text in one long column > (height of container * num columns)
+            // then it will overflow the available space
+            if (measurer.scrollHeight > (availableHeight * colCount) - 20) {
                 maxF = mid;
             } else {
                 bestF = mid;
                 minF = mid;
             }
         }
+        document.body.removeChild(measurer);
         
-        // Apply final font size with a tiny safety buffer (0.2px) to prevent edge cutoffs
-        articleContentContainer.style.setProperty('--dynamic-font-size', (bestF - 0.2) + "px");
+        articleContentContainer.style.setProperty('--dynamic-font-size', (bestF - 0.3) + "px");
         applyAllColors();
     };
 
