@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const systemInstructions = "MANDATORY: You are an expert Marathi newspaper editor. You must write in standard Marathi. DO NOT output ANY markdown formatting (no ```, no bolding, no asterisks, no headers). Output ONLY the final plain text requested by the user prompt. Write directly what should be pasted into the input field.";
             const fullPrompt = `Task: ${prompt}\n\n${systemInstructions}`;
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
