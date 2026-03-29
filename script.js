@@ -155,28 +155,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         articleContentContainer.innerHTML = htmlContent;
 
-        // 1. Initial colCount guess
-        const colThresholds = [
-            { w: 500, c: 2 }, { w: 1000, c: 3 }, { w: 1600, c: 4 }, { w: 2300, c: 5 }
-        ];
+        // 1. Initial colCount guess - slightly more conservative
         let colCount = 6;
-        for (let t of colThresholds) {
-            if (effectiveWords <= t.w) { colCount = t.c; break; }
-        }
+        if (effectiveWords <= 550) colCount = 2;
+        else if (effectiveWords <= 1000) colCount = 3;
+        else if (effectiveWords <= 1500) colCount = 4;
+        else if (effectiveWords <= 2200) colCount = 5;
 
         // 2. Binary search Font logic with live scrollWidth
         const findOptimalFont = (count) => {
             articleContentContainer.style.setProperty('--dynamic-col-count', count);
-            let minF = 8, maxF = 45, bestF = 8;
+            let minF = 9, maxF = 45, bestF = 9;
             
             for (let i = 0; i < 22; i++) {
                 let mid = (minF + maxF) / 2;
                 articleContentContainer.style.setProperty('--dynamic-font-size', mid + "px");
+                const h = articleContentContainer.offsetHeight; // Reflow
                 
-                // Force layout reflow for accurate scrollWidth
-                const h = articleContentContainer.offsetHeight; 
-                
-                if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 4) {
+                if (articleContentContainer.scrollWidth > articleContentContainer.clientWidth + 5) {
                     maxF = mid;
                 } else {
                     bestF = mid;
@@ -186,16 +182,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return bestF;
         };
 
-        // Try to fill the gap: if font is too small, reduce columns to make font bigger
+        // 3. Gap Filling Strategy: Iteratively reduce colCount if it leaves a large gap
         let finalF = findOptimalFont(colCount);
-        if (finalF > 22 && colCount > 2) { 
-            colCount--; 
-            finalF = findOptimalFont(colCount); 
-        } else if (finalF < 10 && colCount < 7) {
-            // If even at 10px it overflows, try adding a column to save the text visibility
-            colCount++;
+        
+        // If font is too big, it fills the page, so we are good.
+        // If font is medium but there's still a gap, try reducing columns to force font bigger.
+        while (finalF > 19 && colCount > 2) {
+            colCount--;
             finalF = findOptimalFont(colCount);
         }
+        
+        // Final polish: if at currently chosen colCount, the font is still tiny (<11px) 
+        // and we have a lot of text, we MUST keep columns high. 
+        // But if font is reasonable (14px+) we try to stay at lower colCount to fill vertical space.
 
         articleContentContainer.style.setProperty('--dynamic-font-size', (finalF - 0.2) + "px");
         applyAllColors();
