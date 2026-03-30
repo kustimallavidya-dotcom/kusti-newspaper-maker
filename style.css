@@ -256,20 +256,16 @@ body {
 
 /* Embedded uploaded image inside the layout */
 .article-image-wrapper {
-    column-span: all;
-    text-align: center;
     width: 100%;
     margin-bottom: 25px;
-    display: block; /* Prevents awkward column breaking visually */
+    display: inline-block; /* Prevents awkward column breaking visually */
 }
 
 .article-image-wrapper img {
-    max-height: 480px;
-    width: auto;
-    max-width: 100%;
+    width: 100%;
     border: 3px solid #222;
     box-sizing: border-box;
-    display: inline-block;
+    display: block;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08); /* slight shadow */
 }
 
