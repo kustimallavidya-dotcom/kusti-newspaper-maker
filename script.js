@@ -327,10 +327,14 @@ document.addEventListener('DOMContentLoaded', () => {
     authorNameInput.addEventListener('input', updateAuthorPreview);
     authorRoleInput.addEventListener('input', updateAuthorPreview);
     newspaperTitleInput.addEventListener('input', () => {
-        newspaperTitleDisplay.innerText = newspaperTitleInput.value.trim() || "कुस्ती मल्लविद्या";
+        const val = newspaperTitleInput.value.trim();
+        newspaperTitleDisplay.innerText = val || "कुस्ती मल्लविद्या";
+        localStorage.setItem('kusti-newspaper-title', val);
     });
     newspaperSloganInput.addEventListener('input', () => {
-        newspaperSloganDisplay.innerText = newspaperSloganInput.value.trim() || '"गे मायभु तुझे मी फेडीन पांग सारे..."';
+        const val = newspaperSloganInput.value.trim();
+        newspaperSloganDisplay.innerText = val || '"गे मायभु तुझे मी फेडीन पांग सारे..."';
+        localStorage.setItem('kusti-newspaper-slogan', val);
     });
 
     // ---------------------------------
@@ -347,6 +351,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     authorNameInput.value = localStorage.getItem('kusti-author-name') || '';
     authorRoleInput.value = localStorage.getItem('kusti-author-role') || '';
+    
+    // Restore Title and Slogan
+    const cachedTitle = localStorage.getItem('kusti-newspaper-title');
+    if (cachedTitle) {
+        newspaperTitleInput.value = cachedTitle;
+        newspaperTitleDisplay.innerText = cachedTitle;
+    }
+    const cachedSlogan = localStorage.getItem('kusti-newspaper-slogan');
+    if (cachedSlogan) {
+        newspaperSloganInput.value = cachedSlogan;
+        newspaperSloganDisplay.innerText = cachedSlogan;
+    }
+
     manualDateInput.value = localStorage.getItem('kusti-date') || '';
     currentDateDisplay.innerText = manualDateInput.value || 'येथे दिनांक दिसेल';
     editionInput.value = localStorage.getItem('kusti-edition') || '';
