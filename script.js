@@ -36,16 +36,7 @@ window.addEventListener('load', () => {
         });
     }
 
-    // Splash Screen Dismissal
-    setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        if (splash) {
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 600); // Wait for transition
-        }
-    }, 2000); // 2 Seconds display
+
 });
 
 document.addEventListener('DOMContentLoaded', () => {
