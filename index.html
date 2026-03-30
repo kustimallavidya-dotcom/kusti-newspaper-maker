@@ -51,14 +51,19 @@
 
         <!-- Dashboard / Controls Area -->
         <aside class="dashboard" id="no-print">
-            <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 10px; border-bottom: 2px solid #eee; margin-bottom: 20px;">
+            <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 10px; border-bottom: 2px solid #eee; margin-bottom: 10px;">
                 <div>
                     <h2 style="margin:0; color:var(--primary-color); font-family:'Tiro Devanagari Marathi';">नियंत्रण पॅनेल</h2>
                     <p style="margin:0; color:#555; font-size:13px;">Editor & Settings</p>
                 </div>
                 <button id="drawer-close" class="drawer-close-btn">&times;</button>
             </div>
-            
+
+            <div class="control-group" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                <button id="download-btn" class="primary-btn" style="flex:1; padding: 12px; font-size: 14px;">HD Image (PNG)</button>
+                <button id="download-pdf-btn" class="primary-btn" style="flex:1; background-color:#b30000; padding: 12px; font-size: 14px;">PDF File</button>
+            </div>
+
             <div class="control-group">
                 <label for="logo-upload">वृत्तपत्राचा लोगो (Logo):</label>
                 <input type="file" id="logo-upload" accept="image/*">
@@ -156,11 +161,6 @@
 
                 <textarea id="article-input" rows="9" placeholder="पूर्ण लेख किंवा मुलाखत येथे पेस्ट करा..."></textarea>
                 <div style="font-size: 11px; color: #d35400; margin-top: 5px; font-weight: bold;">* २००० शब्दांपर्यंत लेख टाका. * अक्षरांच्या दोन्ही बाजूला (उदा. *text*) असल्यास ते Bold होईल.</div>
-            </div>
-
-            <div style="display: flex; gap: 10px; margin-top: auto;">
-                <button id="download-btn" class="primary-btn" style="flex:1;">HD Image (PNG)</button>
-                <button id="download-pdf-btn" class="primary-btn" style="flex:1; background-color:#b30000;">PDF File</button>
             </div>
         </aside>
 
