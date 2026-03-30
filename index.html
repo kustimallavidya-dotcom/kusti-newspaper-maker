@@ -164,80 +164,69 @@
             </div>
         </aside>
 
-        <!-- Dynamic Preview Area (The Canvas) -->
+        <!-- Dynamic Preview Area (The Multi-Page Container) -->
         <main class="preview-area">
-            <!-- This container will be exported by html2canvas -->
-            <div id="newspaper-canvas" style="position: relative;">
-                
-
-                <!-- Date in top right corner with underline, Est, and Edition below it -->
-                <div style="position: absolute; top: 18px; right: 70px; text-align: right; max-width: 200px; z-index: 10;">
-                    <div style="font-size: 14px; font-family: 'Mukta', sans-serif; color: #555; font-weight: bold; border-bottom: 2px solid var(--primary-color); padding-bottom: 4px; margin-bottom: 4px;">
-                        <span id="current-date-text">येथे दिनांक दिसेल</span>
-                    </div>
-                    <div style="display: flex; justify-content: flex-end; gap: 12px; font-family: 'Mukta';">
-                        <div id="establishment-display" style="color: var(--primary-color); font-size: 13px; font-weight: bold;">स्थापना २००९</div>
-                        <div id="edition-display" style="font-size: 13px; font-weight: bold; color: #222;"></div>
-                    </div>
-                </div>
-
-                <header class="newspaper-header" style="border-bottom: 4px solid var(--primary-color); padding-bottom: 6px; margin-bottom: 15px; padding-top: 5px;">
-                    <div class="header-main" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px;">
-                        <div class="logo-container" style="width: 100px; height: 100px; flex-shrink: 0; background: transparent; display: flex; align-items: center; justify-content: center;">
-                            <img id="logo-preview" src="" alt="Logo" style="display:none; max-width: 100%; max-height: 100%;">
-                            <span id="logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
-                        </div>
-                        <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center; position: relative;">
-                            <!-- Text Title (default) -->
-                            <h1 id="newspaper-title-display" class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 65px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
-                            
-                            <div style="display: flex; justify-content: flex-start; align-items: flex-start; margin-top: 5px;">
-                                <h3 id="newspaper-slogan-display" class="newspaper-slogan" style="font-size: 17px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
+            <div id="pages-container" style="display: flex; flex-direction: column; gap: 40px; align-items: center; width: 100%;">
+                <!-- Pages will be dynamically injected here by JS -->
+                <div id="newspaper-canvas-template" style="display: none;">
+                    <div class="newspaper-page" style="position: relative; width: var(--canvas-width); height: var(--canvas-height); background: #fff; padding: 50px 70px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); box-sizing: border-box; display: flex; flex-direction: column; overflow: hidden;">
+                        
+                        <!-- Page Header Info -->
+                        <div class="page-meta" style="position: absolute; top: 18px; right: 70px; text-align: right; max-width: 250px; z-index: 10;">
+                            <div style="font-size: 14px; font-family: 'Mukta', sans-serif; color: #555; font-weight: bold; border-bottom: 2px solid var(--primary-color); padding-bottom: 4px; margin-bottom: 4px;">
+                                <span class="page-date-text">येथे दिनांक दिसेल</span>
+                            </div>
+                            <div style="display: flex; justify-content: flex-end; gap: 12px; font-family: 'Mukta';">
+                                <div class="page-est-text" style="color: var(--primary-color); font-size: 13px; font-weight: bold;">स्थापना २००९</div>
+                                <div class="page-edition-text" style="font-size: 13px; font-weight: bold; color: #222;"></div>
                             </div>
                         </div>
-                    </div>
-                </header>
 
-                <!-- Professional Author Byline -->
-                <div class="author-byline" id="author-byline" style="display:none; align-items: center; margin-bottom: 15px; padding: 12px 15px; background: #f9f9f9;">
-                    <img id="author-photo-preview" src="" alt="Author Photo" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
-                    <div class="author-details">
-                        <h4 id="author-name-display" style="margin: 0; font-size: 19px; font-family: 'Tiro Devanagari Marathi'; color: var(--primary-color);"></h4>
-                        <p id="author-role-display" style="margin: 0; font-size: 14px; font-family: 'Mukta'; color: #444;"></p>
+                        <header class="newspaper-header" style="border-bottom: 4px solid var(--primary-color); padding-bottom: 6px; margin-bottom: 15px; padding-top: 5px;">
+                            <div class="header-main" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px;">
+                                <div class="logo-container" style="width: 100px; height: 100px; flex-shrink: 0; background: transparent; display: flex; align-items: center; justify-content: center;">
+                                    <img class="page-logo-preview" src="" alt="Logo" style="display:none; max-width: 100%; max-height: 100%;">
+                                    <span class="page-logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
+                                </div>
+                                <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center; position: relative;">
+                                    <h1 class="page-title-display newspaper-title" style="font-family: 'Rozha One', serif; font-size: 65px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
+                                    <div style="display: flex; justify-content: flex-start; align-items: flex-start; margin-top: 5px;">
+                                        <h3 class="page-slogan-display newspaper-slogan" style="font-size: 17px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <!-- Page Content Area -->
+                        <div class="page-body" style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
+                            <div class="page-author-byline author-byline" style="display:none; align-items: center; margin-bottom: 15px; padding: 12px 15px; background: #f9f9f9;">
+                                <img class="page-author-photo" src="" alt="Author Photo" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 15px;">
+                                <div class="author-details">
+                                    <h4 class="page-author-name" style="margin: 0; font-size: 19px; font-family: 'Tiro Devanagari Marathi'; color: var(--primary-color);"></h4>
+                                    <p class="page-author-role" style="margin: 0; font-size: 14px; font-family: 'Mukta'; color: #444;"></p>
+                                </div>
+                            </div>
+                            <h2 class="page-headline-display" style="font-family: 'Rozha One', serif; font-size: 38px; text-align: center; margin: 0 0 15px 0; color: var(--primary-color); line-height: 1.2; display: none;"></h2>
+                            <div class="page-article-content columns" style="flex: 1; column-count: 3; column-rule: 1px solid #ccc; column-gap: 30px; column-fill: auto;">
+                                <!-- Page specific text chunks -->
+                            </div>
+                        </div>
+
+                        <!-- Continued / Samapt status -->
+                        <div class="page-status" style="text-align: right; font-family: 'Mukta'; color: #ff0000; font-weight: bold; padding: 5px 0; font-size: 14px;">
+                            <!-- "पुढील पानावर क्रमशः" or "समाप्त" -->
+                        </div>
+
+                        <footer class="newspaper-footer" style="margin-top: 10px; padding-top: 10px; border-top: 3px solid var(--primary-color); text-align: center; font-size: 14px; font-weight: bold; font-family: 'Mukta'; color: #333; background: #fff;">
+                            <div style="display: flex; justify-content: center; gap: 15px; align-items: center; flex-wrap: wrap;">
+                                <span>Kusti Mallavidya</span>
+                                <span class="page-number-display" style="margin-left: auto; color: var(--primary-color);">पान १</span>
+                            </div>
+                        </footer>
                     </div>
                 </div>
-                
-                <h2 id="article-headline-display" style="font-family: 'Rozha One', serif; font-size: 38px; text-align: center; margin: 0 0 15px 0; color: var(--primary-color); line-height: 1.2; display: none;"></h2>
-                
-                <section class="newspaper-content">
-                    <div id="article-content" class="columns">
-                        <!-- Output generated in JS -->
-                    </div>
-                </section>
-
-                <footer class="newspaper-footer" style="margin-top: 20px; padding-top: 15px; border-top: 3px solid var(--primary-color); text-align: center; font-size: 16px; font-weight: bold; font-family: 'Mukta'; color: #333; background: #fff;">
-                    <div style="display: flex; justify-content: center; gap: 20px; align-items: center; flex-wrap: wrap;">
-                        <!-- YouTube -->
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="#ff0000" xmlns="http://www.w3.org/2000/svg"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                            Kusti Mallavidya
-                        </span>
-                        
-                        <!-- Facebook -->
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="#1877f2" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                            Kusti Mallavidya
-                        </span>
-
-                        <!-- Instagram -->
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="#e1306c" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm3.98-10.322a1.44 1.44 0 1 1-2.88 0 1.44 1.44 0 0 1 2.88 0z"/></svg>
-                            @kustimallavidya
-                        </span>
-
-                        <!-- WhatsApp -->
-                        <span style="display: flex; align-items: center; gap: 5px;">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" xmlns="http://www.w3.org/2000/svg"><path d="M12.031 0C5.39 0 0 5.39 0 12.031c0 2.12.553 4.19 1.603 6.01L.065 24l6.113-1.602c1.765.955 3.766 1.458 5.853 1.458 6.638 0 12.03-5.389 12.03-12.029C24 5.39 18.669 0 12.031 0zm0 21.849c-1.802 0-3.565-.484-5.11-1.402l-.366-.217-3.8.995 1.015-3.705-.238-.378a9.967 9.967 0 0 1-1.528-5.32c0-5.522 4.494-10.016 10.027-10.016 5.523 0 10.02 4.494 10.02 10.016 0 5.522-4.497 10.027-10.02 10.027zm5.503-7.525c-.302-.151-1.789-.884-2.065-.986-.276-.1-.477-.152-.678.151-.202.302-.781.986-.957 1.187-.176.202-.353.227-.655.076-1.554-.784-2.657-1.523-3.692-3.238-.202-.338.204-.316.5-.91.075-.15.038-.282-.001-.433-.038-.152-.678-1.636-.93-2.241-.244-.587-.492-.507-.677-.517-.176-.009-.377-.009-.578-.009-.2 0-.528.075-.804.377-.276.302-1.055 1.03-1.055 2.513 0 1.483 1.08 2.915 1.231 3.116.151.202 2.123 3.242 5.144 4.544 1.843.792 2.508.852 3.42.723 .846-.118 2.628-1.073 2.99-2.112.362-1.04.362-1.93.254-2.112-.108-.181-.41-.288-.711-.439z"/></svg>
+            </div>
+        </main>6" xmlns="http://www.w3.org/2000/svg"><path d="M12.031 0C5.39 0 0 5.39 0 12.031c0 2.12.553 4.19 1.603 6.01L.065 24l6.113-1.602c1.765.955 3.766 1.458 5.853 1.458 6.638 0 12.03-5.389 12.03-12.029C24 5.39 18.669 0 12.031 0zm0 21.849c-1.802 0-3.565-.484-5.11-1.402l-.366-.217-3.8.995 1.015-3.705-.238-.378a9.967 9.967 0 0 1-1.528-5.32c0-5.522 4.494-10.016 10.027-10.016 5.523 0 10.02 4.494 10.02 10.016 0 5.522-4.497 10.027-10.02 10.027zm5.503-7.525c-.302-.151-1.789-.884-2.065-.986-.276-.1-.477-.152-.678.151-.202.302-.781.986-.957 1.187-.176.202-.353.227-.655.076-1.554-.784-2.657-1.523-3.692-3.238-.202-.338.204-.316.5-.91.075-.15.038-.282-.001-.433-.038-.152-.678-1.636-.93-2.241-.244-.587-.492-.507-.677-.517-.176-.009-.377-.009-.578-.009-.2 0-.528.075-.804.377-.276.302-1.055 1.03-1.055 2.513 0 1.483 1.08 2.915 1.231 3.116.151.202 2.123 3.242 5.144 4.544 1.843.792 2.508.852 3.42.723 .846-.118 2.628-1.073 2.99-2.112.362-1.04.362-1.93.254-2.112-.108-.181-.41-.288-.711-.439z"/></svg>
                             9511802074
                         </span>
                     </div>
