@@ -170,30 +170,29 @@
             <div id="newspaper-canvas" style="position: relative;">
                 
 
-
-                <!-- Date in top right corner -->
-                <div style="position: absolute; top: 25px; right: 70px; text-align: right; font-size: 13px; font-family: 'Mukta', sans-serif; color: #666; font-weight: bold; max-width: 150px; line-height: 1.4; word-wrap: break-word;">
-                    <span id="current-date-text">येथे दिनांक दिसेल</span>
+                <!-- Date in top right corner with underline, Est, and Edition below it -->
+                <div style="position: absolute; top: 18px; right: 70px; text-align: right; max-width: 200px; z-index: 10;">
+                    <div style="font-size: 14px; font-family: 'Mukta', sans-serif; color: #555; font-weight: bold; border-bottom: 2px solid var(--primary-color); padding-bottom: 4px; margin-bottom: 4px;">
+                        <span id="current-date-text">येथे दिनांक दिसेल</span>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; font-family: 'Mukta';">
+                        <div id="establishment-display" style="color: var(--primary-color); font-size: 13px; font-weight: bold;">स्थापना २००९</div>
+                        <div id="edition-display" style="font-size: 13px; font-weight: bold; color: #222;"></div>
+                    </div>
                 </div>
 
-                <header class="newspaper-header" style="border-bottom: 4px solid var(--primary-color); padding-bottom: 8px; margin-bottom: 15px; padding-top: 10px;">
+                <header class="newspaper-header" style="border-bottom: 4px solid var(--primary-color); padding-bottom: 6px; margin-bottom: 15px; padding-top: 5px;">
                     <div class="header-main" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px;">
-                        <div class="logo-container" style="width: 130px; height: 130px; flex-shrink: 0; background: transparent; display: flex; align-items: center; justify-content: center;">
+                        <div class="logo-container" style="width: 100px; height: 100px; flex-shrink: 0; background: transparent; display: flex; align-items: center; justify-content: center;">
                             <img id="logo-preview" src="" alt="Logo" style="display:none; max-width: 100%; max-height: 100%;">
                             <span id="logo-placeholder" style="font-size: 12px; color: #999;">Logo</span>
                         </div>
                         <div class="title-container" style="flex: 1; text-align: left; display: flex; flex-direction: column; justify-content: center; position: relative;">
                             <!-- Text Title (default) -->
-                            <h1 id="newspaper-title-display" class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 85px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
+                            <h1 id="newspaper-title-display" class="newspaper-title" style="font-family: 'Rozha One', serif; font-size: 65px; margin: 0; line-height: 1; color: var(--primary-color); text-shadow: 2px 2px 4px rgba(0,0,0,0.12);">कुस्ती मल्लविद्या</h1>
                             
-                            <div style="display: flex; justify-content: flex-start; align-items: flex-start; gap: 40px; margin-top: 5px; flex-wrap: wrap;">
-                                <div style="display: flex; flex-direction: column; gap: 2px;">
-                                    <h3 id="newspaper-slogan-display" class="newspaper-slogan" style="font-size: 20px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: 2px; border-left: 2px solid var(--primary-color); padding-left: 15px;">
-                                    <div id="establishment-display" style="color: var(--primary-color); font-size: 12px; font-family:'Mukta'; font-weight: bold;">स्थापना २००९</div>
-                                    <div id="edition-display" style="font-size: 16px; font-family:'Mukta'; font-weight: bold; color: #222;"></div>
-                                </div>
+                            <div style="display: flex; justify-content: flex-start; align-items: flex-start; margin-top: 5px;">
+                                <h3 id="newspaper-slogan-display" class="newspaper-slogan" style="font-size: 17px; margin: 0; color:#333; font-weight: bold; font-family: 'Tiro Devanagari Marathi', serif;">"गे मायभु तुझे मी फेडीन पांग सारे..."</h3>
                             </div>
                         </div>
                     </div>

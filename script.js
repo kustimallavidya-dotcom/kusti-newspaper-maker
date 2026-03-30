@@ -240,16 +240,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let finalF = findOptimalFont(colCount);
         
-        // 3. Gap Filling Strategy: Iteratively reduce colCount if font is getting too massive (or if it looks weird).
-        // If finalF is somewhat big, we just let it be big to fill the gap!
-        // But if we're at 4 columns and font is 35px... it might look better as 2 columns at 45px.
-        while (finalF > 28 && colCount > 1) {
-            colCount--;
-            finalF = findOptimalFont(colCount);
-        }
-        
-        // Final polish to avoid clipping the very bottom due to line-heights
-        articleContentContainer.style.setProperty('--dynamic-font-size', (finalF - 0.4) + "px");
+        // Final polish to avoid clipping the very bottom or right side
+        // Subtract a bit more to ensure it breathes and doesn't cut off words
+        articleContentContainer.style.setProperty('--dynamic-font-size', (finalF - 0.7) + "px");
 
         applyAllColors();
     };
